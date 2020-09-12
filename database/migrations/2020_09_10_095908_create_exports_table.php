@@ -16,13 +16,12 @@ class CreateExportsTable extends Migration
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
             $table->string('fiscal_year');
-            $table->unsignedBigInteger('chapter_headings');
+            $table->unsignedBigInteger('chapter_heading_id');
             $table->foreign('chapter_heading_id')->references('id')->on('chapter_headings')->onDelete('cascade');
             $table->integer('code');
             $table->double('usd', 15, 2);
-            $table->string('country_code');
-            $table->string('coutries_code');
-            $table->foreign('coutries_code')->references('code')->on('countries')->onDelete('cascade');
+            $table->unsignedBigInteger('country_id');
+            $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
             $table->timestamps();
         });
     }

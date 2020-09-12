@@ -15,9 +15,10 @@ class CreateCodeCategoriesTable extends Migration
     {
         Schema::create('code_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('heading');
-            $table->string('chapter');
-            $table->string('section');
+            $table->string('hs_code');
+            $table->string('heading')->nullable();
+            $table->longText('chapter')->nullable();
+            $table->string('section')->nullable();
             $table->timestamps();
         });
     }

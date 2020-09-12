@@ -2,11 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ChapterHeadingRequest;
+use App\Http\Resources\ChapterHeadingResource;
 use App\Models\ChapterHeading;
+use App\Services\ChapterHeadingService;
 use Illuminate\Http\Request;
 
 class ChapterHeadingController extends Controller
 {
+    /**
+     * The ChapterHeading Service instance.
+     *
+     * @var ChapterHeadingService
+     */
+    protected $chapterHeadingService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(ChapterHeadingService $chapterHeadingService = null)
+    {
+        $this->chapterHeadingService = $chapterHeadingService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +34,8 @@ class ChapterHeadingController extends Controller
      */
     public function index()
     {
-        //
+        $chapterHeadings = $this->chapterHeadingService->getAll();
+        return ChapterHeadingResource::collection($chapterHeadings);
     }
 
     /**
@@ -22,9 +43,11 @@ class ChapterHeadingController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(ChapterHeadingRequest $request): ChapterHeadingResource
     {
-        //
+        dd($request->all());
+        $chapterHeading = $this->chapterHeadingService->create($request->all());
+        return new ChapterHeadingResource($chapterHeading);
     }
 
     /**

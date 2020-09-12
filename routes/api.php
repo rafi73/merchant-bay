@@ -12,8 +12,17 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
+});
+
+Route::group(['prefix' => 'v1'], function ($router) {
+    Route::get('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@index');
+    Route::get('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@show');
+    Route::post('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@create');
+    Route::put('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@update');
+    Route::delete('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@delete');
+    Route::post('chapter-heading-bulk', 'App\Http\Controllers\ChapterHeadingController@storeBulk');
 });
