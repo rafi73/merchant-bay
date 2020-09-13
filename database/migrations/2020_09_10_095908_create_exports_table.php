@@ -18,10 +18,11 @@ class CreateExportsTable extends Migration
             $table->string('fiscal_year');
             $table->unsignedBigInteger('chapter_heading_id');
             $table->foreign('chapter_heading_id')->references('id')->on('chapter_headings')->onDelete('cascade');
-            $table->integer('code');
+            $table->text('code');
             $table->double('usd', 15, 2);
             $table->unsignedBigInteger('country_id');
             $table->foreign('country_id')->references('id')->on('countries')->onDelete('cascade');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
