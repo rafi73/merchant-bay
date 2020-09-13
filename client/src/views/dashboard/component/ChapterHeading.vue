@@ -347,7 +347,6 @@
                             item-value="id"
                             item-text="name"
                             v-model="selectedCountryId"
-                            :rules="[v => !!v || 'Code Category is required']"
                             solo
                             v-on:change="fetchExportsByCountry"
                         ></v-select>
@@ -386,7 +385,7 @@
                             <p class="d-inline-flex font-weight-light ml-2 mt-1">
                                 <v-icon color="green" small>mdi-arrow-up</v-icon>
                                 <span class="green--text">55%</span>&nbsp;
-                                increase in today's sales
+                                increase in this year's sales
                             </p>
 
                             <template v-slot:actions>
@@ -418,9 +417,9 @@
                                             avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
                                         >
                                             <v-card-text class="text-center">
-                                                <h5
+                                                <h6
                                                     class="display-2 font-weight-light mb-3 black--text"
-                                                >{{suppliers[n].company_name}}</h5>
+                                                >{{suppliers[n].company_name}}</h6>
                                                 <p
                                                     class="font-weight-light grey--text"
                                                 >{{suppliers[n].company_email}}</p>
@@ -583,7 +582,7 @@ export default {
                 }
             },
             sheet: null,
-            countries: [],
+            countries: [{ 'id': null, 'name': 'All' }],
             suppliers: [],
             selectedCountryId: null,
             graphData: []
@@ -599,8 +598,8 @@ export default {
     mounted() {
         this.fetchCodeCategories()
         this.fetchChapterHeadings()
-        //this.fetchSuppliers()
-        this.fetchCounties()
+        this.fetchSuppliers()
+        // this.fetchCounties()
     },
 
     methods: {
@@ -632,7 +631,8 @@ export default {
             this.dialogDetails = true
             this.editMode = false
 
-
+            this.selectedCountryId = null
+            this.countries = [{ 'id': null, 'name': 'All' }]
             this.fetchExports()
         },
         validate() {
@@ -844,7 +844,7 @@ export default {
             this.$http
                 .get(baseURI)
                 .then(result => {
-                    this.countries = result.data.data.countries
+                    this.countries = this.countries.concat(result.data.data.countries)
                     this.dailySalesChart.data.labels = result.data.data.fiscal_years
                     this.dailySalesChart.data.series = result.data.data.usd
                     this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0]) + 5
@@ -855,6 +855,12 @@ export default {
                 })
         },
         fetchExportsByCountry() {
+
+            if (!this.selectedCountryId) {
+                this.fetchExports()
+                return
+            }
+
             this.loading = true
             const baseURI = `/api/v1/exports-by-country/${3002}/${this.selectedCountryId}`
             this.$http

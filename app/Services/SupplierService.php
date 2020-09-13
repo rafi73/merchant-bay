@@ -2,20 +2,16 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\Supplier;
-use Illuminate\Support\Facades\Auth;
 use App\Contracts\ServiceInterface;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\QueryException;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use App\Exceptions\SupplierService\SupplierNotFoundException;
 use App\Exceptions\SupplierService\SupplierBulkDataErrorException;
 use App\Exceptions\SupplierService\SupplierBulkStructureException;
+use App\Exceptions\SupplierService\SupplierNotFoundException;
 use App\Exceptions\SupplierService\SupplierOwnerMismatchedException;
-
-
+use App\Models\Supplier;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class SupplierService implements ServiceInterface
 {
@@ -24,7 +20,7 @@ class SupplierService implements ServiceInterface
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getAll() : LengthAwarePaginator
+    public function getAll(): LengthAwarePaginator
     {
         return Supplier::paginate(10);
     }
@@ -35,9 +31,9 @@ class SupplierService implements ServiceInterface
      * @param array $request
      * @return \App\Supplier
      */
-    public function create(array $request) : Supplier
+    public function create(array $request): Supplier
     {
-        return Supplier::create($request); 
+        return Supplier::create($request);
     }
 
     /**
@@ -48,15 +44,13 @@ class SupplierService implements ServiceInterface
      * @throws \App\Exceptions\SupplierService\SupplierOwnerMismatchedException
      * @return bool
      */
-    public function delete(int $id) : bool
+    public function delete(int $id): bool
     {
         $robot = Supplier::find($id);
-        if(!$robot)
-        {
+        if (!$robot) {
             throw new SupplierNotFoundException();
         }
-        if($robot->user_id != Auth::id())
-        {
+        if ($robot->user_id != Auth::id()) {
             throw new SupplierOwnerMismatchedException();
         }
 
@@ -72,15 +66,13 @@ class SupplierService implements ServiceInterface
      * @throws \App\Exceptions\SupplierService\SupplierOwnerMismatchedException
      * @return \App\Supplier
      */
-    public function update(array $request, int $id) : Supplier
+    public function update(array $request, int $id): Supplier
     {
         $robot = Supplier::find($id);
-        if(!$robot)
-        {
+        if (!$robot) {
             throw new SupplierNotFoundException();
         }
-        if($robot->user_id != Auth::id())
-        {
+        if ($robot->user_id != Auth::id()) {
             throw new SupplierOwnerMismatchedException();
         }
 
@@ -94,11 +86,10 @@ class SupplierService implements ServiceInterface
      * @throws \App\Exceptions\SupplierService\SupplierNotFoundException
      * @return \App\Supplier
      */
-    public function find(int $id) : Supplier
+    public function find(int $id): Supplier
     {
         $robot = Supplier::find($id);
-        if(!$robot)
-        {
+        if (!$robot) {
             throw new SupplierNotFoundException();
         }
         return $robot;
@@ -112,7 +103,7 @@ class SupplierService implements ServiceInterface
      * @throws \App\Exceptions\SupplierService\SupplierBulkDataErrorException
      * @return bool
      */
-    public function createBulk(array $request) : bool
+    public function createBulk(array $request): bool
     {
         $requiredStructure = ['name', 'power', 'speed', 'weight'];
         $file = $request['file'];
@@ -120,27 +111,26 @@ class SupplierService implements ServiceInterface
         $head = str_getcsv(array_shift($lines));
         sort($head);
 
-        if($head !== $requiredStructure)
-        {
+        if ($head !== $requiredStructure) {
             throw new SupplierBulkStructureException();
         }
 
         $robots = [];
-        for ($i = 0; $i < count($lines); $i++) 
-        { 
-            if(!strlen($lines[$i])) continue;
+        for ($i = 0; $i < count($lines); $i++) {
+            if (!strlen($lines[$i])) {
+                continue;
+            }
+
             $robot = array_combine($head, str_getcsv($lines[$i]));
             $robot['created_by'] = $robot['updated_by'] = $robot['user_id'] = Auth::id();
             $robot['created_at'] = $robot['updated_at'] = now();
             $robots[] = $robot;
         }
-        
-        try 
+
+        try
         {
             Supplier::insert($robots);
-        }
-        catch(QueryException $exception)
-        {
+        } catch (QueryException $exception) {
             throw new SupplierBulkDataErrorException();
         }
         return true;
@@ -151,7 +141,7 @@ class SupplierService implements ServiceInterface
      *
      * @return Illuminate\Database\Eloquent\Collection
      */
-    public function getOwnSuppliers() : Collection
+    public function getOwnSuppliers(): Collection
     {
         return Auth::user()->robots;
     }
@@ -161,8 +151,8 @@ class SupplierService implements ServiceInterface
      *
      * @return Illuminate\Database\Eloquent\Collection
      */
-    public function getSuppliers() : Collection
+    public function getSuppliers(): Collection
     {
-        return Supplier::all();
+        return Supplier::take(100)->get();
     }
 }
