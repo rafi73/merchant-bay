@@ -407,21 +407,28 @@
                                     <v-card
                                         :color="active ? 'primary' : 'grey lighten-1'"
                                         class="ma-4"
-                                        height="200"
-                                        width="160"
+                                        height="400"
+                                        width="300"
                                         @click="toggle"
                                     >
-                                        {{n}}
-                                        <v-row class="fill-height" align="center" justify="center">
-                                            <v-scale-transition>
-                                                <v-icon
-                                                    v-if="active"
-                                                    color="white"
-                                                    size="48"
-                                                    v-text="'mdi-close-circle-outline'"
-                                                ></v-icon>
-                                            </v-scale-transition>
-                                        </v-row>
+                                        <base-material-card
+                                            class="v-card-profile"
+                                            avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
+                                        >
+                                            <v-card-text class="text-center">
+                                                <h6
+                                                    class="display-1 mb-1 grey--text"
+                                                >CEO / CO-FOUNDER</h6>
+
+                                                <h4
+                                                    class="display-2 font-weight-light mb-3 black--text"
+                                                >Alec Thompson</h4>
+
+                                                <p
+                                                    class="font-weight-light grey--text"
+                                                >Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...</p>
+                                            </v-card-text>
+                                        </base-material-card>
                                     </v-card>
                                 </v-slide-item>
                             </v-slide-group>

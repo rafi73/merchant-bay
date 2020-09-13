@@ -3,10 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Country;
+use App\Services\CountryService;
 use Illuminate\Http\Request;
+use App\Http\Resources\CountryResource;
 
 class CountryController extends Controller
 {
+    /**
+     * The Countries Service instance.
+     *
+     * @var CountryService
+     */
+    protected $countryService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(CountryService $countryService = null)
+    {
+        $this->countryService = $countryService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -81,5 +100,16 @@ class CountryController extends Controller
     public function destroy(Country $country)
     {
         //
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getCountries()
+    {
+        $countries = $this->countryService->getCountries();
+        return CountryResource::collection($countries);
     }
 }

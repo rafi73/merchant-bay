@@ -3,10 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Supplier;
+use App\Services\SupplierService;
 use Illuminate\Http\Request;
+use App\Http\Resources\SupplierResource;
 
 class SupplierController extends Controller
 {
+    /**
+     * The Supplier Service instance.
+     *
+     * @var SupplierService
+     */
+    protected $supplierService;
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(SupplierService $supplierService = null)
+    {
+        $this->supplierService = $supplierService;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -81,5 +100,16 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier)
     {
         //
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getSuppliers()
+    {
+        $suppliers = $this->supplierService->getSuppliers();
+        return SupplierResource::collection($suppliers);
     }
 }

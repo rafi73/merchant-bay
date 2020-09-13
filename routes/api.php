@@ -27,4 +27,6 @@ Route::group(['prefix' => 'v1'], function ($router) {
     Route::post('chapter-heading-bulk', 'App\Http\Controllers\ChapterHeadingController@storeBulk');
 
     Route::get('code-categories', 'App\Http\Controllers\CodeCategoryController@getCodeCategories');
+    Route::get('suppliers', 'App\Http\Controllers\SupplierController@getSuppliers');
+    Route::get('countries', 'App\Http\Controllers\CountryController@getCountries');
 });
