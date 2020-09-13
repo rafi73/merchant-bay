@@ -17,8 +17,8 @@ class ChapterHeadingResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'code_category_id' => $this->code_category_id,
             'image' => $this->image,
+            'code_category' => $this->codeCategory
         ];
     }
 

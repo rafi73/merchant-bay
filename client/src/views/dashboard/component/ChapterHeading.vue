@@ -28,9 +28,10 @@
                             </template>
                             <span>{{$t('add_item')}}</span>
                         </v-tooltip>
+                        {{chapterHeadings}}
                         <v-data-table
                             :headers="headers"
-                            :items="roles"
+                            :items="chapterHeadings"
                             :options.sync="pagination"
                             :loading="loading"
                             :server-items-length="totalItems"
@@ -46,12 +47,11 @@
                         >
                             <template v-slot:item="row">
                                 <tr>
-                                    <td align="center">{{ indexGenerate(row.item) }}</td>
+                                    <td align="center">{{ indexGenerate(row.title) }}</td>
                                     <td align="center">{{row.item.title}}</td>
-                                    <td align="center">
-                                        <v-simple-checkbox v-model="row.item.is_active" disabled></v-simple-checkbox>
-                                    </td>
-                                    <td align="center">{{ dateFormat(row.item.created_at) }}</td>
+                                    <td
+                                        align="center"
+                                    >{{ dateFormat(row.item.code_category.heading) }}</td>
                                     <td align="center">
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on }">
@@ -289,6 +289,150 @@
         </v-dialog>
         <!-- Add/Update permission dialog End-->
 
+        <v-dialog
+            v-model="dialogDetails"
+            hide-overlay
+            transition="dialog-bottom-transition"
+            scrollable
+            max-width="1000px"
+        >
+            <v-card tile>
+                <v-toolbar flat dark color="primary">
+                    <v-btn icon dark @click="dialogDetails = false">
+                        <v-icon>mdi-close</v-icon>
+                    </v-btn>
+                    <v-toolbar-title>Settings</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-toolbar-items>
+                        <v-btn dark text @click="dialogDetails = false">Save</v-btn>
+                    </v-toolbar-items>
+                    <v-menu bottom right offset-y>
+                        <template v-slot:activator="{ on, attrs }">
+                            <v-btn dark icon v-bind="attrs" v-on="on">
+                                <v-icon>mdi-dots-vertical</v-icon>
+                            </v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="(item, i) in items" :key="i" @click="() => {}">
+                                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                            </v-list-item>
+                        </v-list>
+                    </v-menu>
+                </v-toolbar>
+                <v-card-text>
+                    <v-spacer></v-spacer>
+                    <v-col cols="12">
+                        <base-material-card
+                            class="v-card-profile"
+                            avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
+                        >
+                            <v-card-text class="text-center">
+                                <h6 class="display-1 mb-1 grey--text">CEO / CO-FOUNDER</h6>
+
+                                <h4
+                                    class="display-2 font-weight-light mb-3 black--text"
+                                >Alec Thompson</h4>
+
+                                <p
+                                    class="font-weight-light grey--text"
+                                >Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...</p>
+                            </v-card-text>
+                        </base-material-card>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="12">
+                        <v-select
+                            :items="codeCategories"
+                            label="Select Code Category"
+                            item-value="id"
+                            item-text="heading"
+                            v-model="chapterHeading.code_category_id"
+                            :rules="[v => !!v || 'Code Category is required']"
+                            solo
+                        ></v-select>
+                        <base-material-chart-card
+                            :data="dailySalesChart.data"
+                            :options="dailySalesChart.options"
+                            color="black"
+                            hover-reveal
+                            type="Line"
+                        >
+                            <template v-slot:reveal-actions>
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ attrs, on }">
+                                        <v-btn v-bind="attrs" color="info" icon v-on="on">
+                                            <v-icon color="info">mdi-refresh</v-icon>
+                                        </v-btn>
+                                    </template>
+
+                                    <span>Refresh</span>
+                                </v-tooltip>
+
+                                <v-tooltip bottom>
+                                    <template v-slot:activator="{ attrs, on }">
+                                        <v-btn v-bind="attrs" light icon v-on="on">
+                                            <v-icon>mdi-pencil</v-icon>
+                                        </v-btn>
+                                    </template>
+
+                                    <span>Change Date</span>
+                                </v-tooltip>
+                            </template>
+
+                            <h4 class="card-title font-weight-light mt-2 ml-2">Transaction History</h4>
+
+                            <p class="d-inline-flex font-weight-light ml-2 mt-1">
+                                <v-icon color="green" small>mdi-arrow-up</v-icon>
+                                <span class="green--text">55%</span>&nbsp;
+                                increase in today's sales
+                            </p>
+
+                            <template v-slot:actions>
+                                <v-icon class="mr-1" small>mdi-clock-outline</v-icon>
+                                <span
+                                    class="caption grey--text font-weight-light"
+                                >updated 4 minutes ago</span>
+                            </template>
+                        </base-material-chart-card>
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col cols="12">
+                        <v-sheet class="mx-auto" elevation="8">
+                            <v-slide-group v-model="sheet" class="pa-4" center-active show-arrows>
+                                <v-slide-item
+                                    v-for="n in 150"
+                                    :key="n"
+                                    v-slot:default="{ active, toggle }"
+                                >
+                                    <v-card
+                                        :color="active ? 'primary' : 'grey lighten-1'"
+                                        class="ma-4"
+                                        height="200"
+                                        width="160"
+                                        @click="toggle"
+                                    >
+                                        {{n}}
+                                        <v-row class="fill-height" align="center" justify="center">
+                                            <v-scale-transition>
+                                                <v-icon
+                                                    v-if="active"
+                                                    color="white"
+                                                    size="48"
+                                                    v-text="'mdi-close-circle-outline'"
+                                                ></v-icon>
+                                            </v-scale-transition>
+                                        </v-row>
+                                    </v-card>
+                                </v-slide-item>
+                            </v-slide-group>
+                        </v-sheet>
+                    </v-col>
+                </v-card-text>
+
+                <div style="flex: 1 1 auto;"></div>
+            </v-card>
+        </v-dialog>
+
         <!-- Delete confirmatioon dialog Start-->
         <DialogDelete
             :dialogConfirmDelete="dialogConfirmDelete"
@@ -342,9 +486,9 @@ export default {
                 },
                 {
                     align: 'center',
-                    text: 'Status',
+                    text: 'Heading',
                     sortable: true,
-                    value: 'is_active'
+                    value: 'heading'
                 },
                 {
                     align: 'center',
@@ -408,7 +552,29 @@ export default {
             menus: [],
             validRolePermission: false,
             codeCategories: [],
-            chapterHeading: {}
+            chapterHeading: {},
+            chapterHeadings: [],
+            dialogDetails: false,
+            dailySalesChart: {
+                data: {
+                    labels: ["M", "T", "W", "T", "F", "S", "S"],
+                    series: [[12, 17, 7, 17, 23, 18, 38]]
+                },
+                options: {
+                    lineSmooth: this.$chartist.Interpolation.cardinal({
+                        tension: 0
+                    }),
+                    low: 0,
+                    high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+                    chartPadding: {
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                    }
+                }
+            },
+            sheet: null
         }
     },
 
@@ -420,6 +586,7 @@ export default {
 
     mounted() {
         this.fetchCodeCategories()
+        this.fetchChapterHeadings()
     },
 
     methods: {
@@ -448,7 +615,7 @@ export default {
         },
         addItem() {
             this.resetItem()
-            this.dialog = true
+            this.dialogDetails = true
             this.editMode = false
         },
         validate() {
@@ -520,7 +687,7 @@ export default {
             if (pagination.sortBy.length) {
                 this.sort = `${pagination.sortBy[0]} ${pagination.sortDesc[0] == true ? 'desc' : 'asc'}`
             }
-            //this.fetchItems()
+            this.fetchChapterHeadings()
         },
         resetItem() {
             this.codeCategory = {
@@ -599,6 +766,21 @@ export default {
         changeMenu(menuID) {
             this.selectedPermissions = []
             this.fetchPermission(this.role.id, menuID)
+        },
+        fetchChapterHeadings() {
+            this.loading = true
+            const baseURI = `/api/v1/chapter-headings`
+            this.$http
+                .get(baseURI)
+                .then(result => {
+                    this.chapterHeadings = result.data.data
+                    this.totalItems = resutl.data.meta.total
+                    console.log(this.chapterHeadings)
+                    this.loading = false
+                })
+                .catch(error => {
+                    this.loading = false
+                })
         },
         fetchCodeCategories() {
             this.loading = true
