@@ -17,6 +17,7 @@ class SupplierResource extends JsonResource
         return [
             'id' => $this->id,
             'company_name' => $this->company_name,
+            'company_email' => $this->company_email
         ];
     }
 

@@ -342,11 +342,11 @@
                     <v-spacer></v-spacer>
                     <v-col cols="12">
                         <v-select
-                            :items="codeCategories"
-                            label="Select Code Category"
+                            :items="countries"
+                            label="Select Country"
                             item-value="id"
-                            item-text="heading"
-                            v-model="chapterHeading.code_category_id"
+                            item-text="name"
+                            v-model="selectedCountryId"
                             :rules="[v => !!v || 'Code Category is required']"
                             solo
                         ></v-select>
@@ -400,15 +400,15 @@
                         <v-sheet class="mx-auto" elevation="8">
                             <v-slide-group v-model="sheet" class="pa-4" center-active show-arrows>
                                 <v-slide-item
-                                    v-for="n in 150"
+                                    v-for="n in suppliers.length"
                                     :key="n"
                                     v-slot:default="{ active, toggle }"
                                 >
                                     <v-card
                                         :color="active ? 'primary' : 'grey lighten-1'"
                                         class="ma-4"
-                                        height="400"
-                                        width="300"
+                                        height="380"
+                                        width="230"
                                         @click="toggle"
                                     >
                                         <base-material-card
@@ -416,17 +416,14 @@
                                             avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
                                         >
                                             <v-card-text class="text-center">
-                                                <h6
-                                                    class="display-1 mb-1 grey--text"
-                                                >CEO / CO-FOUNDER</h6>
-
-                                                <h4
+                                                <h5
                                                     class="display-2 font-weight-light mb-3 black--text"
-                                                >Alec Thompson</h4>
+                                                >{{suppliers[n].company_name}}</h5>
+                                                 <p class="font-weight-light grey--text">{{suppliers[n].company_email}}</p>
 
                                                 <p
                                                     class="font-weight-light grey--text"
-                                                >Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...</p>
+                                                >Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye...</p>
                                             </v-card-text>
                                         </base-material-card>
                                     </v-card>
@@ -581,7 +578,10 @@ export default {
                     }
                 }
             },
-            sheet: null
+            sheet: null,
+            countries: [],
+            suppliers: [],
+            selectedCountryId: null
         }
     },
 
@@ -594,6 +594,8 @@ export default {
     mounted() {
         this.fetchCodeCategories()
         this.fetchChapterHeadings()
+        this.fetchSuppliers()
+        this.fetchCounties()
     },
 
     methods: {
@@ -796,6 +798,32 @@ export default {
                 .get(baseURI)
                 .then(result => {
                     this.codeCategories = result.data.data
+                    this.loading = false
+                })
+                .catch(error => {
+                    this.loading = false
+                })
+        },
+        fetchCounties() {
+            this.loading = true
+            const baseURI = `/api/v1/countries`
+            this.$http
+                .get(baseURI)
+                .then(result => {
+                    this.countries = result.data.data
+                    this.loading = false
+                })
+                .catch(error => {
+                    this.loading = false
+                })
+        },
+        fetchSuppliers() {
+            this.loading = true
+            const baseURI = `/api/v1/suppliers`
+            this.$http
+                .get(baseURI)
+                .then(result => {
+                    this.suppliers = result.data.data
                     this.loading = false
                 })
                 .catch(error => {
