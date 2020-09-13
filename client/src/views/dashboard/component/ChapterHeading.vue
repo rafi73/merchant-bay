@@ -8,7 +8,7 @@
                     dark
                     color="primary"
                     icon="mdi-atom"
-                    :title="$t('roles')"
+                    title="Chapter Heading"
                     class="px-5 py-3"
                 >
                     <v-card-text>
@@ -28,11 +28,10 @@
                             </template>
                             <span>{{$t('add_item')}}</span>
                         </v-tooltip>
-                        {{chapterHeadings}}
                         <v-data-table
                             :headers="headers"
                             :items="chapterHeadings"
-                            :options.sync="pagination"
+                            :items-per-page="5"
                             :loading="loading"
                             :server-items-length="totalItems"
                             :footer-props="{
@@ -47,11 +46,10 @@
                         >
                             <template v-slot:item="row">
                                 <tr>
-                                    <td align="center">{{ indexGenerate(row.title) }}</td>
-                                    <td align="center">{{row.item.title}}</td>
-                                    <td
-                                        align="center"
-                                    >{{ dateFormat(row.item.code_category.heading) }}</td>
+                                    <td align="center">{{ indexGenerate(row.item.title) }}</td>
+                                    <td align="left">{{row.item.title}}</td>
+                                    <td align="center">{{row.item.code_category.heading}}</td>
+                                    <td align="center">{{ dateFormat(row.item.created_at) }}</td>
                                     <td align="center">
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on }">
@@ -76,30 +74,14 @@
                                                     fab
                                                     dark
                                                     x-small
-                                                    color="red"
-                                                    v-on="on"
-                                                    @click="deleteItem(row.item)"
-                                                >
-                                                    <v-icon dark>mdi-delete</v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span>{{$t('delete')}}</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on }">
-                                                <v-btn
-                                                    class="mx-2"
-                                                    fab
-                                                    dark
-                                                    x-small
                                                     color="deep-purple"
                                                     v-on="on"
-                                                    @click="assignPermission(row.item)"
+                                                    @click="showDetails(row.item)"
                                                 >
-                                                    <v-icon dark>mdi-security</v-icon>
+                                                    <v-icon dark>mdi-eye</v-icon>
                                                 </v-btn>
                                             </template>
-                                            <span>{{$t('assign_permission')}}</span>
+                                            <span>Show Details</span>
                                         </v-tooltip>
                                     </td>
                                 </tr>
@@ -133,16 +115,6 @@
                                 label="Title"
                                 required
                             ></v-text-field>
-
-                            <!-- <v-autocomplete
-                                v-model="model"
-                                :hint="!isEditing ? 'Click the icon to edit' : 'Click the icon to save'"
-                                :items="states"
-                                :readonly="!isEditing"
-                                :label="`State — ${isEditing ? 'Editable' : 'Readonly'}`"
-                                persistent-hint
-                                prepend-icon="mdi-city"
-                            ></v-autocomplete>-->
 
                             <v-select
                                 :items="codeCategories"
@@ -200,95 +172,6 @@
         </v-dialog>
         <!-- Add/Update dialog End-->
 
-        <!-- Add/Update permission dialog Start-->
-        <v-dialog v-model="dialogRolePermission" persistent max-width="600px">
-            <v-card>
-                <v-card-title>
-                    <span class="headline">{{ $t('assign_permission') }}</span>
-                </v-card-title>
-                <template>
-                    <v-form
-                        ref="formRolePermission"
-                        v-model="validRolePermission"
-                        lazy-validation
-                        @keyup.enter.native="validateRolePermission()"
-                        @keyup.esc.native="dialog = false"
-                    >
-                        <v-card-text>
-                            <v-row>
-                                <v-col cols="6">
-                                    <v-text-field v-model="role.title" disabled label="Solo" solo></v-text-field>
-                                </v-col>
-                                <v-col cols="6">
-                                    <v-select
-                                        :items="menus"
-                                        item-value="id"
-                                        item-text="title"
-                                        label="Select Menu"
-                                        v-model="rolePermission.menu_id"
-                                        solo
-                                        :rules="[v => !!v || 'Menu is required']"
-                                        v-on:change="changeMenu"
-                                        required
-                                    ></v-select>
-                                </v-col>
-                                <v-col cols="12">
-                                    <template>
-                                        <v-data-table
-                                            v-model="selectedPermissions"
-                                            :headers="permissionHeaders"
-                                            :items="permissions"
-                                            item-key="title"
-                                            show-select
-                                            class="elevation-1"
-                                            :hide-default-footer="true"
-                                        ></v-data-table>
-                                    </template>
-                                </v-col>
-                            </v-row>
-                            <v-spacer></v-spacer>
-                        </v-card-text>
-
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-tooltip bottom>
-                                <template v-slot:activator="{ on }">
-                                    <v-btn
-                                        class="mx-2"
-                                        fab
-                                        small
-                                        dark
-                                        color="red"
-                                        v-on="on"
-                                        @click="dialogRolePermission = false"
-                                    >
-                                        <v-icon dark>mdi-close</v-icon>
-                                    </v-btn>
-                                </template>
-                                <span>{{$t('close')}}</span>
-                            </v-tooltip>
-                            <v-tooltip bottom>
-                                <template v-slot:activator="{ on }">
-                                    <v-btn
-                                        class="mx-2"
-                                        fab
-                                        dark
-                                        color="primary"
-                                        v-on="on"
-                                        @click="validateRolePermission()"
-                                    >
-                                        <v-icon dark>mdi-content-save</v-icon>
-                                    </v-btn>
-                                </template>
-                                <span>{{$t('save')}}</span>
-                            </v-tooltip>
-                        </v-card-actions>
-                    </v-form>
-                </template>
-            </v-card>
-        </v-dialog>
-        <!-- Add/Update permission dialog End-->
-
         <v-dialog
             v-model="dialogDetails"
             hide-overlay
@@ -327,15 +210,15 @@
                             avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
                         >
                             <v-card-text class="text-center">
-                                <h6 class="display-1 mb-1 grey--text">CEO / CO-FOUNDER</h6>
+                                <h6 class="display-1 mb-1 grey--text">{{chapterHeading.title}}</h6>
 
                                 <h4
                                     class="display-2 font-weight-light mb-3 black--text"
-                                >Alec Thompson</h4>
+                                >{{chapterHeading.code_category.chapter}}</h4>
 
                                 <p
                                     class="font-weight-light grey--text"
-                                >Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...</p>
+                                >{{chapterHeading.code_category.section}}</p>
                             </v-card-text>
                         </base-material-card>
                     </v-col>
@@ -466,7 +349,7 @@ import DialogDelete from './../components/core/DialogDelete'
 import VImageInput from 'vuetify-image-input'
 
 export default {
-    name: 'Role',
+    name: 'Chapter Heading',
     components: {
         Snackbar, DialogDelete, [VImageInput.name]: VImageInput,
     },
@@ -585,7 +468,7 @@ export default {
             countries: [{ 'id': null, 'name': 'All' }],
             suppliers: [],
             selectedCountryId: null,
-            graphData: []
+            graphData: [],
         }
     },
 
@@ -628,12 +511,8 @@ export default {
         },
         addItem() {
             this.resetItem()
-            this.dialogDetails = true
+            this.dialog = true
             this.editMode = false
-
-            this.selectedCountryId = null
-            this.countries = [{ 'id': null, 'name': 'All' }]
-            this.fetchExports()
         },
         validate() {
             this.$refs.form.validate()
@@ -712,60 +591,6 @@ export default {
                 code_category_id: 0
             }
         },
-        fetchPermission(roleID, menuID) {
-            this.loading = true
-            const baseURI = `/admin/v1/assign-permissions/${roleID}/${menuID}`
-            this.$http
-                .get(baseURI)
-                .then(result => {
-                    this.permissions = result.data.data
-                    this.permissions.forEach(permission => {
-                        if (permission.role_permissions.length > 0) {
-                            this.selectedPermissions.push(permission)
-                        }
-                    })
-                    this.loading = false
-                })
-                .catch(error => {
-                    this.loading = false
-                })
-        },
-        fetchMenu(roleID, menuID) {
-            this.loading = true
-            const baseURI = '/admin/v1/menus'
-            this.$http
-                .get(baseURI)
-                .then(result => {
-                    this.menus = result.data.data
-                    this.loading = false
-                })
-                .catch(error => {
-                    this.loading = false
-                })
-        },
-        assignPermission(item) {
-            this.dialogRolePermission = true
-            this.role = item
-            this.rolePermission.role_id = item.id
-            this.rolePermission.menu_id = null
-            this.fetchMenu(item.id)
-            this.selectedPermissions = []
-            this.permissions = []
-        },
-        savePermission() {
-            this.rolePermission.permission_ids = this.selectedPermissions.map(item => item['id'])
-            const baseURI = '/admin/v1/role-permissions'
-            this.$http
-                .post(baseURI, this.rolePermission)
-                .then(result => {
-                    this.dialogRolePermission = false
-                    this.fetchItems()
-                    this.showSnackbar(result.data.message, 'success')
-                })
-                .catch(error => {
-                    this.showSnackbar(error.response, 'error')
-                })
-        },
         indexGenerate(item) {
             return (this.pagination.page - 1) * this.pagination.itemsPerPage + (this.roles.indexOf(item) + 1)
         },
@@ -791,7 +616,7 @@ export default {
                 .get(baseURI)
                 .then(result => {
                     this.chapterHeadings = result.data.data
-                    this.totalItems = resutl.data.meta.total
+                    this.totalItems = result.data.meta.total
                     console.log(this.chapterHeadings)
                     this.loading = false
                 })
@@ -840,7 +665,7 @@ export default {
         },
         fetchExports() {
             this.loading = true
-            const baseURI = `/api/v1/exports/${3002}`
+            const baseURI = `/api/v1/exports/${this.chapterHeading.id}`
             this.$http
                 .get(baseURI)
                 .then(result => {
@@ -862,7 +687,7 @@ export default {
             }
 
             this.loading = true
-            const baseURI = `/api/v1/exports-by-country/${3002}/${this.selectedCountryId}`
+            const baseURI = `/api/v1/exports-by-country/${this.chapterHeading.id}/${this.selectedCountryId}`
             this.$http
                 .get(baseURI)
                 .then(result => {
@@ -888,6 +713,13 @@ export default {
                     this.showSnackbar(error.response, 'error')
                 })
         },
+        showDetails(item) {
+            this.chapterHeading = item
+            this.dialogDetails = true
+            this.selectedCountryId = null
+            this.countries = [{ 'id': null, 'name': 'All' }]
+            this.fetchExports()
+        }
     },
     watch: {
         dialog() {
