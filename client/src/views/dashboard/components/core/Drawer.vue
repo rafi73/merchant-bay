@@ -80,31 +80,31 @@ export default {
 
     data: () => ({
         items: [
-            {
-                icon: 'mdi-view-dashboard',
-                title: 'dashboard',
-                to: '/',
-            },
-            {
-                title: 'roles',
-                icon: 'mdi-atom',
-                to: '/roles',
-            },
-            {
-                title: 'admins',
-                icon: 'mdi-flash',
-                to: '/admins',
-            },
-            {
-                title: 'merchants',
-                icon: 'mdi-store-outline',
-                to: '/merchants',
-            },
-            {
-                title: 'users',
-                icon: 'mdi-account-multiple',
-                to: '/users',
-            },
+            // {
+            //     icon: 'mdi-view-dashboard',
+            //     title: 'dashboard',
+            //     to: '/',
+            // },
+            // {
+            //     title: 'roles',
+            //     icon: 'mdi-atom',
+            //     to: '/roles',
+            // },
+            // {
+            //     title: 'admins',
+            //     icon: 'mdi-flash',
+            //     to: '/admins',
+            // },
+            // {
+            //     title: 'merchants',
+            //     icon: 'mdi-store-outline',
+            //     to: '/merchants',
+            // },
+            // {
+            //     title: 'users',
+            //     icon: 'mdi-account-multiple',
+            //     to: '/users',
+            // },
             {
                 title: 'Chapter Heading',
                 icon: 'mdi-atom',

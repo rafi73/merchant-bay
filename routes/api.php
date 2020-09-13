@@ -29,4 +29,6 @@ Route::group(['prefix' => 'v1'], function ($router) {
     Route::get('code-categories', 'App\Http\Controllers\CodeCategoryController@getCodeCategories');
     Route::get('suppliers', 'App\Http\Controllers\SupplierController@getSuppliers');
     Route::get('countries', 'App\Http\Controllers\CountryController@getCountries');
+    Route::get('exports/{chapterHeadingId}', 'App\Http\Controllers\ExportController@getExportData');
+    Route::get('exports-by-country/{chapterHeadingId}/{countryId}', 'App\Http\Controllers\ExportController@getExportDataByCountry');
 });

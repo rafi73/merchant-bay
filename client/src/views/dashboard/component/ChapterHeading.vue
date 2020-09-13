@@ -294,7 +294,7 @@
             hide-overlay
             transition="dialog-bottom-transition"
             scrollable
-            max-width="1000px"
+            fullscreen
         >
             <v-card tile>
                 <v-toolbar flat dark color="primary">
@@ -349,7 +349,9 @@
                             v-model="selectedCountryId"
                             :rules="[v => !!v || 'Code Category is required']"
                             solo
+                            v-on:change="fetchExportsByCountry"
                         ></v-select>
+
                         <base-material-chart-card
                             :data="dailySalesChart.data"
                             :options="dailySalesChart.options"
@@ -379,7 +381,7 @@
                                 </v-tooltip>
                             </template>
 
-                            <h4 class="card-title font-weight-light mt-2 ml-2">Transaction History</h4>
+                            <h4 class="card-title font-weight-light mt-2 ml-2">Export History</h4>
 
                             <p class="d-inline-flex font-weight-light ml-2 mt-1">
                                 <v-icon color="green" small>mdi-arrow-up</v-icon>
@@ -419,7 +421,9 @@
                                                 <h5
                                                     class="display-2 font-weight-light mb-3 black--text"
                                                 >{{suppliers[n].company_name}}</h5>
-                                                 <p class="font-weight-light grey--text">{{suppliers[n].company_email}}</p>
+                                                <p
+                                                    class="font-weight-light grey--text"
+                                                >{{suppliers[n].company_email}}</p>
 
                                                 <p
                                                     class="font-weight-light grey--text"
@@ -562,14 +566,14 @@ export default {
             dailySalesChart: {
                 data: {
                     labels: ["M", "T", "W", "T", "F", "S", "S"],
-                    series: [[12, 17, 7, 17, 23, 18, 38]]
+                    series: [[12, 17, 57, 17, 23, 18, 50, 100]]
                 },
                 options: {
                     lineSmooth: this.$chartist.Interpolation.cardinal({
                         tension: 0
                     }),
                     low: 0,
-                    high: 50, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+                    high: 150, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
                     chartPadding: {
                         top: 0,
                         right: 0,
@@ -581,7 +585,8 @@ export default {
             sheet: null,
             countries: [],
             suppliers: [],
-            selectedCountryId: null
+            selectedCountryId: null,
+            graphData: []
         }
     },
 
@@ -594,7 +599,7 @@ export default {
     mounted() {
         this.fetchCodeCategories()
         this.fetchChapterHeadings()
-        this.fetchSuppliers()
+        //this.fetchSuppliers()
         this.fetchCounties()
     },
 
@@ -626,6 +631,9 @@ export default {
             this.resetItem()
             this.dialogDetails = true
             this.editMode = false
+
+
+            this.fetchExports()
         },
         validate() {
             this.$refs.form.validate()
@@ -824,6 +832,37 @@ export default {
                 .get(baseURI)
                 .then(result => {
                     this.suppliers = result.data.data
+                    this.loading = false
+                })
+                .catch(error => {
+                    this.loading = false
+                })
+        },
+        fetchExports() {
+            this.loading = true
+            const baseURI = `/api/v1/exports/${3002}`
+            this.$http
+                .get(baseURI)
+                .then(result => {
+                    this.countries = result.data.data.countries
+                    this.dailySalesChart.data.labels = result.data.data.fiscal_years
+                    this.dailySalesChart.data.series = result.data.data.usd
+                    this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0]) + 5
+                    this.loading = false
+                })
+                .catch(error => {
+                    this.loading = false
+                })
+        },
+        fetchExportsByCountry() {
+            this.loading = true
+            const baseURI = `/api/v1/exports-by-country/${3002}/${this.selectedCountryId}`
+            this.$http
+                .get(baseURI)
+                .then(result => {
+                    this.dailySalesChart.data.labels = result.data.data.fiscal_years
+                    this.dailySalesChart.data.series = result.data.data.usd
+                    this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0]) + 5
                     this.loading = false
                 })
                 .catch(error => {
