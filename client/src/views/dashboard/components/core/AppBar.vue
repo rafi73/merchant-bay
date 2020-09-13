@@ -9,7 +9,7 @@
         <v-icon>{{message.icon}}</v-icon>
         <v-toolbar-title
             class="hidden-sm-and-down font-weight-light"
-            v-text="`${message.greeting}, ${$store.state.admin.data.username}!`"
+            v-text="`${message.greeting}!`"
         />
 
         <v-spacer />
@@ -176,9 +176,9 @@ export default {
     },
     mounted() {
         this.getWelcomeMessage()
-        if (this.$store.state.admin.data) {
-            this.username = this.$store.state.admin.data.username
-        }
+        // if (this.$store.state.admin.data) {
+        //     this.username = this.$store.state.admin.data.username
+        // }
     },
     methods: {
         ...mapMutations({

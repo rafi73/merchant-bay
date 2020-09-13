@@ -79,7 +79,38 @@ export default {
     },
 
     data: () => ({
-        items: [],
+        items: [
+            {
+                icon: 'mdi-view-dashboard',
+                title: 'dashboard',
+                to: '/',
+            },
+            {
+                title: 'roles',
+                icon: 'mdi-atom',
+                to: '/roles',
+            },
+            {
+                title: 'admins',
+                icon: 'mdi-flash',
+                to: '/admins',
+            },
+            {
+                title: 'merchants',
+                icon: 'mdi-store-outline',
+                to: '/merchants',
+            },
+            {
+                title: 'users',
+                icon: 'mdi-account-multiple',
+                to: '/users',
+            },
+            {
+                title: 'Chapter Heading',
+                icon: 'mdi-atom',
+                to: '/chapter-headings',
+            },
+        ],
     }),
 
     computed: {
@@ -114,39 +145,10 @@ export default {
     },
 
     mounted() {
-        console.log(this.$store.state.admin.data)
-        if (this.$store.state.admin.data.menu != null) {
-            this.items = this.$store.state.admin.data.menu
-        }
-        if (this.$store.state.admin.data.is_superuser) {
-            this.items = [
-                {
-                    icon: 'mdi-view-dashboard',
-                    title: 'dashboard',
-                    to: '/',
-                },
-                {
-                    title: 'roles',
-                    icon: 'mdi-atom',
-                    to: '/roles',
-                },
-                {
-                    title: 'admins',
-                    icon: 'mdi-flash',
-                    to: '/admins',
-                },
-                {
-                    title: 'merchants',
-                    icon: 'mdi-store-outline',
-                    to: '/merchants',
-                },
-                {
-                    title: 'users',
-                    icon: 'mdi-account-multiple',
-                    to: '/users',
-                },
-            ]
-        }
+        //console.log(this.$store.state.admin.data)
+        // if (this.$store.state.admin.data.menu != null) {
+        //     this.items = this.$store.state.admin.data.menu
+        // }
     }
 }
 </script>

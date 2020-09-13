@@ -2,20 +2,16 @@
 
 namespace App\Services;
 
-use Carbon\Carbon;
-use App\Models\ChapterHeading;
-use Illuminate\Support\Facades\Auth;
 use App\Contracts\ServiceInterface;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Database\QueryException;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
-use App\Exceptions\ChapterHeadingService\ChapterHeadingNotFoundException;
 use App\Exceptions\ChapterHeadingService\ChapterHeadingBulkDataErrorException;
 use App\Exceptions\ChapterHeadingService\ChapterHeadingBulkStructureException;
+use App\Exceptions\ChapterHeadingService\ChapterHeadingNotFoundException;
 use App\Exceptions\ChapterHeadingService\ChapterHeadingOwnerMismatchedException;
-
-
+use App\Models\ChapterHeading;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\QueryException;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 
 class ChapterHeadingService implements ServiceInterface
 {
@@ -24,7 +20,7 @@ class ChapterHeadingService implements ServiceInterface
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getAll() : LengthAwarePaginator
+    public function getAll(): LengthAwarePaginator
     {
         return ChapterHeading::paginate(10);
     }
@@ -35,9 +31,10 @@ class ChapterHeadingService implements ServiceInterface
      * @param array $request
      * @return \App\ChapterHeading
      */
-    public function create(array $request) : ChapterHeading
+    public function create(array $request): ChapterHeading
     {
-        return ChapterHeading::create($request); 
+        //dd($request);
+        return ChapterHeading::create($request);
     }
 
     /**
@@ -48,15 +45,13 @@ class ChapterHeadingService implements ServiceInterface
      * @throws \App\Exceptions\ChapterHeadingService\ChapterHeadingOwnerMismatchedException
      * @return bool
      */
-    public function delete(int $id) : bool
+    public function delete(int $id): bool
     {
         $robot = ChapterHeading::find($id);
-        if(!$robot)
-        {
+        if (!$robot) {
             throw new ChapterHeadingNotFoundException();
         }
-        if($robot->user_id != Auth::id())
-        {
+        if ($robot->user_id != Auth::id()) {
             throw new ChapterHeadingOwnerMismatchedException();
         }
 
@@ -72,15 +67,13 @@ class ChapterHeadingService implements ServiceInterface
      * @throws \App\Exceptions\ChapterHeadingService\ChapterHeadingOwnerMismatchedException
      * @return \App\ChapterHeading
      */
-    public function update(array $request, int $id) : ChapterHeading
+    public function update(array $request, int $id): ChapterHeading
     {
         $robot = ChapterHeading::find($id);
-        if(!$robot)
-        {
+        if (!$robot) {
             throw new ChapterHeadingNotFoundException();
         }
-        if($robot->user_id != Auth::id())
-        {
+        if ($robot->user_id != Auth::id()) {
             throw new ChapterHeadingOwnerMismatchedException();
         }
 
@@ -94,11 +87,10 @@ class ChapterHeadingService implements ServiceInterface
      * @throws \App\Exceptions\ChapterHeadingService\ChapterHeadingNotFoundException
      * @return \App\ChapterHeading
      */
-    public function find(int $id) : ChapterHeading
+    public function find(int $id): ChapterHeading
     {
         $robot = ChapterHeading::find($id);
-        if(!$robot)
-        {
+        if (!$robot) {
             throw new ChapterHeadingNotFoundException();
         }
         return $robot;
@@ -112,7 +104,7 @@ class ChapterHeadingService implements ServiceInterface
      * @throws \App\Exceptions\ChapterHeadingService\ChapterHeadingBulkDataErrorException
      * @return bool
      */
-    public function createBulk(array $request) : bool
+    public function createBulk(array $request): bool
     {
         $requiredStructure = ['name', 'power', 'speed', 'weight'];
         $file = $request['file'];
@@ -120,27 +112,26 @@ class ChapterHeadingService implements ServiceInterface
         $head = str_getcsv(array_shift($lines));
         sort($head);
 
-        if($head !== $requiredStructure)
-        {
+        if ($head !== $requiredStructure) {
             throw new ChapterHeadingBulkStructureException();
         }
 
         $robots = [];
-        for ($i = 0; $i < count($lines); $i++) 
-        { 
-            if(!strlen($lines[$i])) continue;
+        for ($i = 0; $i < count($lines); $i++) {
+            if (!strlen($lines[$i])) {
+                continue;
+            }
+
             $robot = array_combine($head, str_getcsv($lines[$i]));
             $robot['created_by'] = $robot['updated_by'] = $robot['user_id'] = Auth::id();
             $robot['created_at'] = $robot['updated_at'] = now();
             $robots[] = $robot;
         }
-        
-        try 
+
+        try
         {
             ChapterHeading::insert($robots);
-        }
-        catch(QueryException $exception)
-        {
+        } catch (QueryException $exception) {
             throw new ChapterHeadingBulkDataErrorException();
         }
         return true;
@@ -151,7 +142,7 @@ class ChapterHeadingService implements ServiceInterface
      *
      * @return Illuminate\Database\Eloquent\Collection
      */
-    public function getOwnChapterHeadings() : Collection
+    public function getOwnChapterHeadings(): Collection
     {
         return Auth::user()->robots;
     }
@@ -161,7 +152,7 @@ class ChapterHeadingService implements ServiceInterface
      *
      * @return Illuminate\Database\Eloquent\Collection
      */
-    public function getOtherChapterHeadings() : Collection
+    public function getOtherChapterHeadings(): Collection
     {
         return ChapterHeading::where('user_id', '<>', Auth::id())->get();
     }

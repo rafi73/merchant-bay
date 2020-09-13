@@ -25,6 +25,7 @@ import moment from 'moment'
 import DateFormater from './helpers/dateFormater'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import VImageInput from 'vuetify-image-input';
+import '@mdi/font/css/materialdesignicons.css'
 
 Vue.component(VImageInput.name, VImageInput);
 
@@ -32,7 +33,9 @@ Vue.use(DateFormater)
 
 
 
-axios.defaults.baseURL = 'http://127.0.0.1:8082'
+axios.defaults.baseURL = 'http://127.0.0.1:8000'
+axios.defaults.headers['Accept'] = 'application/json';
+
 Vue.prototype.$http = axios
 Vue.prototype.moment = moment
 

@@ -45,7 +45,6 @@ class ChapterHeadingController extends Controller
      */
     public function create(ChapterHeadingRequest $request): ChapterHeadingResource
     {
-        dd($request->all());
         $chapterHeading = $this->chapterHeadingService->create($request->all());
         return new ChapterHeadingResource($chapterHeading);
     }

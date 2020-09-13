@@ -86,6 +86,11 @@ export default new Router({
                     path: 'users',
                     component: () => import('@/views/dashboard/component/Users'),
                 },
+                {
+                    name: 'Chapter Heading',
+                    path: 'chapter-headings',
+                    component: () => import('@/views/dashboard/component/ChapterHeading'),
+                },
             ],
         },
         {

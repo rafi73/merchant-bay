@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class ChapterHeading extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['title', 'code_category_id', 'image']; 
 }

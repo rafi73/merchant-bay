@@ -4,10 +4,10 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ChapterHeadingResource extends JsonResource
+class CodeCategoryResource extends JsonResource
 {
     /**
-     * Transform the resource collection into an array.
+     * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
@@ -16,9 +16,7 @@ class ChapterHeadingResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'title' => $this->title,
-            'code_category_id' => $this->code_category_id,
-            'image' => $this->image,
+            'heading' => $this->heading,
         ];
     }
 

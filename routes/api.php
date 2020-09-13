@@ -25,4 +25,6 @@ Route::group(['prefix' => 'v1'], function ($router) {
     Route::put('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@update');
     Route::delete('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@delete');
     Route::post('chapter-heading-bulk', 'App\Http\Controllers\ChapterHeadingController@storeBulk');
+
+    Route::get('code-categories', 'App\Http\Controllers\CodeCategoryController@getCodeCategories');
 });
