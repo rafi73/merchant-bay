@@ -520,7 +520,7 @@ export default {
                         tension: 0
                     }),
                     low: 0,
-                    high: 150, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
+                    high: 1500000, // creative tim: we recommend you to set the high sa the biggest value + something for a better look
                     chartPadding: {
                         top: 0,
                         right: 0,
@@ -758,7 +758,8 @@ export default {
                     this.countries = this.countries.concat(result.data.data.countries)
                     this.dailySalesChart.data.labels = result.data.data.fiscal_years
                     this.dailySalesChart.data.series = result.data.data.usd
-                    this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0]) + 5
+                    this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0])
+                    console.log()
                     this.loading = false
                 })
                 .catch(error => {
