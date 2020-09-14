@@ -16,12 +16,12 @@
                             md="4"
                             sm="6"
                             cols="12"
-                            v-for="(post, index) in chapterHeadings"
-                            :key="post.id"
+                            v-for="(chapterHeading, index) in chapterHeadings"
+                            :key="chapterHeading.id"
                         >
                             <v-sheet min-height="200" class="fill-height" color="transparent">
                                 <v-lazy
-                                    v-model="post.isActive"
+                                    v-model="chapterHeading.isActive"
                                     :options="{
                                             threshold: .5
                                         }"
@@ -34,17 +34,17 @@
                                             :src="images[Math.floor(Math.random()*images.length)]"
                                         ></v-img>
 
-                                        <v-card-subtitle class="pb-0">{{post.title.slice(0, 20)}}</v-card-subtitle>
+                                        <v-card-subtitle class="pb-0">{{chapterHeading.title.slice(0, 20)}}</v-card-subtitle>
 
                                         <v-card-text class="text--primary">
-                                            <div>{{post.code_category.heading.slice(0, 20)}}</div>
+                                            <div>{{chapterHeading.id}}</div>
 
-                                            <div>{{post.code_category.chapter.slice(0, 20)}}</div>
+                                            <div>{{chapterHeading.code_category.chapter.slice(0, 20)}}</div>
                                         </v-card-text>
                                         <v-divider></v-divider>
 
                                         <v-card-actions>
-                                            <v-btn @click="showDetails(post)" text>Show details</v-btn>
+                                            <v-btn @click="showDetails(chapterHeading)" text>Show details</v-btn>
                                         </v-card-actions>
                                     </v-card>
                                 </v-lazy>
@@ -657,7 +657,7 @@ export default {
         saveChapterHeading() {
             const baseURI = '/api/v1/chapter-headings'
             this.$http
-                .post(baseURI, this.chapterHeading)
+                .chapterHeading(baseURI, this.chapterHeading)
                 .then(result => {
                     this.dialog = false
                     this.fetchChapterHeadings()
