@@ -19,7 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'v1'], function ($router) {
-    Route::get('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@index');
+    Route::get('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@getChapterHeadings');
     Route::get('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@show');
     Route::post('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@create');
     Route::put('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@update');

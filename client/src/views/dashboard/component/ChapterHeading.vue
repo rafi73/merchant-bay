@@ -4,158 +4,61 @@
         <!-- Content Start-->
         <v-row>
             <v-col cols="12" md="12">
-                <!-- <base-material-card
-                    dark
-                    color="primary"
-                    icon="mdi-atom"
-                    title="Chapter Heading"
-                    class="px-5 py-3"
-                >
-                    <v-card-text>
-                        <v-tooltip bottom>
-                            <template v-slot:activator="{ on }">
-                                <v-btn
-                                    absolute
-                                    fab
-                                    top
-                                    right
-                                    color="primary"
-                                    v-on="on"
-                                    @click="addItem()"
-                                >
-                                    <v-icon dark>mdi-plus</v-icon>
-                                </v-btn>
-                            </template>
-                            <span>{{$t('add_item')}}</span>
-                        </v-tooltip>
-                        <v-data-table
-                            :headers="headers"
-                            :items="chapterHeadings"
-                            :items-per-page="10"
-                            :options.sync="pagination"
-                            :loading="loading"
-                            :server-items-length="totalItems"
-                            :footer-props="{
-                                showFirstLastPage: true,
-                                firstIcon: 'mdi-arrow-collapse-left',
-                                lastIcon: 'mdi-arrow-collapse-right',
-                                prevIcon: 'mdi-minus',
-                                nextIcon: 'mdi-plus'
-                            }"
-                            @update:options="updatePagination"
-                            loading-text
+                <v-container class="py-3">
+                    <div class="display-2">Chapter Headings</div>
+                    <h5>
+                        <span v-text="visiblePosts"></span> of
+                        <span v-text="chapterHeadings.length"></span> posts shown
+                    </h5>
+                    <v-row class="fill-height overflow-y-auto" v-if="chapterHeadings.length">
+                        <v-col
+                            lg="3"
+                            md="4"
+                            sm="6"
+                            cols="12"
+                            v-for="(post, index) in chapterHeadings"
+                            :key="post.id"
                         >
-                            <template v-slot:item="row">
-                                <tr>
-                                    <td align="center">
-                                        <v-img
-                                            :src="images[Math.floor(Math.random()*images.length)]"
-                                            max-height="40px"
-                                            max-width="40px"
-                                            aspect-ratio="1"
-                                        ></v-img>
-                                    </td>
-                                    <td align="left">{{row.item.title.slice(0, 50)}}</td>
-                                    <td
-                                        align="center"
-                                    >{{row.item.code_category.heading.slice(0, 50)}}</td>
-                                    <td align="center">{{ dateFormat(row.item.created_at) }}</td>
-                                    <td align="center">
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on }">
-                                                <v-btn
-                                                    class="mx-2"
-                                                    fab
-                                                    dark
-                                                    x-small
-                                                    color="primary"
-                                                    v-on="on"
-                                                    @click="editItem(row.item)"
-                                                >
-                                                    <v-icon dark>mdi-pencil</v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span>{{$t('edit')}}</span>
-                                        </v-tooltip>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on }">
-                                                <v-btn
-                                                    class="mx-2"
-                                                    fab
-                                                    dark
-                                                    x-small
-                                                    color="deep-purple"
-                                                    v-on="on"
-                                                    @click="showDetails(row.item)"
-                                                >
-                                                    <v-icon dark>mdi-eye</v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <span>Show Details</span>
-                                        </v-tooltip>
-                                    </td>
-                                </tr>
-                            </template>
-                        </v-data-table>
-                    </v-card-text>
-                </base-material-card>-->
-
-                <v-app>
-                    <v-container class="py-3">
-                        <div class="display-2">Chapter Headings</div>
-                        <h5>
-                            <span v-text="visiblePosts"></span> of
-                            <span v-text="posts.length"></span> posts shown
-                        </h5>
-                        <v-row class="fill-height overflow-y-auto" v-if="posts.length">
-                            <v-col
-                                lg="3"
-                                md="4"
-                                sm="6"
-                                cols="12"
-                                v-for="(post, index) in chapterHeadings"
-                            >
-                                <v-sheet min-height="250" class="fill-height" color="transparent">
-                                    <v-lazy
-                                        v-model="post.isActive"
-                                        :options="{
+                            <v-sheet min-height="200" class="fill-height" color="transparent">
+                                <v-lazy
+                                    v-model="post.isActive"
+                                    :options="{
                                             threshold: .5
                                         }"
-                                        class="fill-height"
-                                    >
-                                        <v-card class="mx-auto" max-width="400">
-                                            <v-img
-                                                class="white--text align-end"
-                                                height="200px"
-                                                :src="images[Math.floor(Math.random()*images.length)]"
-                                            >
-                                                <!-- <v-card-title>{{post.title}}</v-card-title> -->
-                                            </v-img>
+                                    class="fill-height"
+                                >
+                                    <v-card class="mx-auto" max-width="400">
+                                        <v-img
+                                            class="white--text align-end"
+                                            height="200px"
+                                            :src="images[Math.floor(Math.random()*images.length)]"
+                                        >
+                                            <!-- <v-card-title>{{post.title}}</v-card-title> -->
+                                        </v-img>
 
-                                            <v-card-subtitle class="pb-0">{{post.title}}</v-card-subtitle>
+                                        <v-card-subtitle class="pb-0">{{post.title}}</v-card-subtitle>
 
-                                            <v-card-text class="text--primary">
-                                                <div>{{post.code_category.heading.slice(0, 50)}}</div>
+                                        <v-card-text class="text--primary">
+                                            <div>{{post.code_category.heading.slice(0, 50)}}</div>
 
-                                                <div>{{post.code_category.chapter}}</div>
-                                            </v-card-text>
+                                            <div>{{post.code_category.chapter}}</div>
+                                        </v-card-text>
 
-                                            <v-row align="center">
-                                                <v-card-actions>
-                                                    <v-btn
-                                                        color="orange"
-                                                        text
-                                                        @click="showDetails(post)"
-                                                    >Show details</v-btn>
-                                                </v-card-actions>
-                                            </v-row>
-                                        </v-card>
-                                    </v-lazy>
-                                </v-sheet>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-app>
+                                        <v-row align="center">
+                                            <v-card-actions>
+                                                <v-btn
+                                                    color="orange"
+                                                    text
+                                                    @click="showDetails(post)"
+                                                >Show details</v-btn>
+                                            </v-card-actions>
+                                        </v-row>
+                                    </v-card>
+                                </v-lazy>
+                            </v-sheet>
+                        </v-col>
+                    </v-row>
+                </v-container>
             </v-col>
         </v-row>
         <!-- Content End-->
@@ -587,7 +490,7 @@ export default {
             return this.editMode ? 'Edit Item' : 'New Item'
         },
         visiblePosts() {
-            return this.posts.filter(p => p.isActive).length
+            return this.chapterHeadings.filter(p => p.isActive).length
         }
     },
 
@@ -595,7 +498,6 @@ export default {
         this.fetchCodeCategories()
         this.fetchChapterHeadings()
         this.fetchSuppliers()
-        // this.fetchCounties()
         this.addPosts()
     },
 
@@ -671,7 +573,7 @@ export default {
         },
         fetchChapterHeadings() {
             this.loading = true
-            const baseURI = `/api/v1/chapter-headings?page=${this.pagination.page}`
+            const baseURI = `/api/v1/chapter-headings`
             this.$http
                 .get(baseURI)
                 .then(result => {
@@ -778,12 +680,6 @@ export default {
             this.selectedCountryId = null
             this.countries = [{ 'id': null, 'name': 'All' }]
             this.fetchExports()
-        },
-        addPosts() {
-            this.$http.get('https://jsonplaceholder.typicode.com/posts')
-                .then(response => {
-                    this.posts = response.data
-                })
         }
     },
     watch: {

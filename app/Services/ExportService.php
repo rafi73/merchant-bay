@@ -33,8 +33,6 @@ class ExportService implements ServiceInterface
      */
     public function create(array $request): Export
     {
-        //dd($request);
-        return Export::create($request);
     }
 
     /**
@@ -47,15 +45,6 @@ class ExportService implements ServiceInterface
      */
     public function delete(int $id): bool
     {
-        $robot = Export::find($id);
-        if (!$robot) {
-            throw new ExportNotFoundException();
-        }
-        if ($robot->user_id != Auth::id()) {
-            throw new ExportOwnerMismatchedException();
-        }
-
-        return Export::destroy($id);
     }
 
     /**
@@ -69,15 +58,6 @@ class ExportService implements ServiceInterface
      */
     public function update(array $request, int $id): Export
     {
-        $robot = Export::find($id);
-        if (!$robot) {
-            throw new ExportNotFoundException();
-        }
-        if ($robot->user_id != Auth::id()) {
-            throw new ExportOwnerMismatchedException();
-        }
-
-        return tap(Export::findOrFail($id))->update($request)->fresh();
     }
 
     /**
@@ -89,62 +69,6 @@ class ExportService implements ServiceInterface
      */
     public function find(int $id): Export
     {
-        $robot = Export::find($id);
-        if (!$robot) {
-            throw new ExportNotFoundException();
-        }
-        return $robot;
-    }
-
-    /**
-     * Create & store robots from CSV
-     *
-     * @param array $request
-     * @throws \App\Exceptions\ExportService\ExportBulkStructureException
-     * @throws \App\Exceptions\ExportService\ExportBulkDataErrorException
-     * @return bool
-     */
-    public function createBulk(array $request): bool
-    {
-        $requiredStructure = ['name', 'power', 'speed', 'weight'];
-        $file = $request['file'];
-        $lines = explode("\n", file_get_contents($file));
-        $head = str_getcsv(array_shift($lines));
-        sort($head);
-
-        if ($head !== $requiredStructure) {
-            throw new ExportBulkStructureException();
-        }
-
-        $robots = [];
-        for ($i = 0; $i < count($lines); $i++) {
-            if (!strlen($lines[$i])) {
-                continue;
-            }
-
-            $robot = array_combine($head, str_getcsv($lines[$i]));
-            $robot['created_by'] = $robot['updated_by'] = $robot['user_id'] = Auth::id();
-            $robot['created_at'] = $robot['updated_at'] = now();
-            $robots[] = $robot;
-        }
-
-        try
-        {
-            Export::insert($robots);
-        } catch (QueryException $exception) {
-            throw new ExportBulkDataErrorException();
-        }
-        return true;
-    }
-
-    /**
-     * Getting own Exports
-     *
-     * @return Illuminate\Database\Eloquent\Collection
-     */
-    public function getOwnExports(): Collection
-    {
-        return Auth::user()->robots;
     }
 
     /**

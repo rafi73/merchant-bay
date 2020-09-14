@@ -50,17 +50,6 @@ class CountryService implements ServiceInterface
      */
     public function delete(int $id) : bool
     {
-        $robot = Country::find($id);
-        if(!$robot)
-        {
-            throw new CountryNotFoundException();
-        }
-        if($robot->user_id != Auth::id())
-        {
-            throw new CountryOwnerMismatchedException();
-        }
-
-        return Country::destroy($id);
     }
 
     /**
@@ -74,17 +63,6 @@ class CountryService implements ServiceInterface
      */
     public function update(array $request, int $id) : Country
     {
-        $robot = Country::find($id);
-        if(!$robot)
-        {
-            throw new CountryNotFoundException();
-        }
-        if($robot->user_id != Auth::id())
-        {
-            throw new CountryOwnerMismatchedException();
-        }
-
-        return tap(Country::findOrFail($id))->update($request)->fresh();
     }
 
     /**
@@ -96,12 +74,6 @@ class CountryService implements ServiceInterface
      */
     public function find(int $id) : Country
     {
-        $robot = Country::find($id);
-        if(!$robot)
-        {
-            throw new CountryNotFoundException();
-        }
-        return $robot;
     }
 
     /**
@@ -114,36 +86,6 @@ class CountryService implements ServiceInterface
      */
     public function createBulk(array $request) : bool
     {
-        $requiredStructure = ['name', 'power', 'speed', 'weight'];
-        $file = $request['file'];
-        $lines = explode("\n", file_get_contents($file));
-        $head = str_getcsv(array_shift($lines));
-        sort($head);
-
-        if($head !== $requiredStructure)
-        {
-            throw new CountryBulkStructureException();
-        }
-
-        $robots = [];
-        for ($i = 0; $i < count($lines); $i++) 
-        { 
-            if(!strlen($lines[$i])) continue;
-            $robot = array_combine($head, str_getcsv($lines[$i]));
-            $robot['created_by'] = $robot['updated_by'] = $robot['user_id'] = Auth::id();
-            $robot['created_at'] = $robot['updated_at'] = now();
-            $robots[] = $robot;
-        }
-        
-        try 
-        {
-            Country::insert($robots);
-        }
-        catch(QueryException $exception)
-        {
-            throw new CountryBulkDataErrorException();
-        }
-        return true;
     }
 
     /**

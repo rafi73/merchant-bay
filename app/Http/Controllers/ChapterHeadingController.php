@@ -104,4 +104,15 @@ class ChapterHeadingController extends Controller
     {
         //
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getChapterHeadings()
+    {
+        $chapterHeadings = $this->chapterHeadingService->getChapterHeadings();
+        return ChapterHeadingResource::collection($chapterHeadings);
+    }
 }
