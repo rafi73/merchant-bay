@@ -48,8 +48,10 @@
                             <template v-slot:item="row">
                                 <tr>
                                     <td align="center">{{ indexGenerate(row.item.title) }}</td>
-                                    <td align="left">{{row.item.title}}</td>
-                                    <td align="center">{{row.item.code_category.heading}}</td>
+                                    <td align="left">{{row.item.title.slice(0, 50)}}</td>
+                                    <td
+                                        align="center"
+                                    >{{row.item.code_category.heading.slice(0, 50)}}</td>
                                     <td align="center">{{ dateFormat(row.item.created_at) }}</td>
                                     <td align="center">
                                         <v-tooltip bottom>
@@ -222,13 +224,13 @@
                                             >Heading ID : {{chapterHeading.id}}</h4>
                                             <p
                                                 class="font-weight-light black--text"
-                                            >Heading Title : {{chapterHeading.title}}</p>
+                                            >Heading Title : {{chapterHeading.title.slice(0, 50)}}</p>
                                             <p
                                                 class="font-weight-light black--text"
-                                            >Heading Chapter : {{chapterHeading.code_category.chapter}}</p>
+                                            >Heading Chapter : {{chapterHeading.code_category.chapter.slice(0, 50)}}</p>
                                             <p
                                                 class="font-weight-light black--text"
-                                            >Heading Section : {{chapterHeading.code_category.section}}</p>
+                                            >Heading Section : {{chapterHeading.code_category.section.slice(0, 50)}}</p>
                                         </v-form>
                                     </v-row>
                                 </v-row>
@@ -488,7 +490,11 @@ export default {
             validRolePermission: false,
             codeCategories: [],
             chapterHeading: {
-                code_category: {}
+                title: '',
+                code_category: {
+                    chapter: '',
+                    section: ''
+                }
             },
             chapterHeadings: [],
             dialogDetails: false,
