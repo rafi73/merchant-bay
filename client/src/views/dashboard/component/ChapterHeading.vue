@@ -47,7 +47,14 @@
                         >
                             <template v-slot:item="row">
                                 <tr>
-                                    <td align="center">{{ indexGenerate(row.item.title) }}</td>
+                                    <td align="center">
+                                        <v-img
+                                            :src="images[Math.floor(Math.random()*images.length)]"
+                                            max-height="40px"
+                                            max-width="40px"
+                                            aspect-ratio="1"
+                                        ></v-img>
+                                    </td>
                                     <td align="left">{{row.item.title.slice(0, 50)}}</td>
                                     <td
                                         align="center"
@@ -203,6 +210,7 @@
                     </v-menu>
                 </v-toolbar>
                 <v-card-text>
+                    <!-- Information -->
                     <v-spacer></v-spacer>
                     <v-col cols="12">
                         <v-card class="mx-auto">
@@ -238,6 +246,7 @@
                         </v-card>
                     </v-col>
 
+                    <!-- Chart -->
                     <v-spacer></v-spacer>
                     <v-col cols="12">
                         <v-select
@@ -299,6 +308,8 @@
                         </base-material-chart-card>
                     </v-col>
                     <v-spacer></v-spacer>
+
+                    <!-- Slider -->
                     <v-col cols="12">
                         <base-material-card
                             color="primary"
@@ -411,12 +422,12 @@ export default {
             headers: [
                 {
                     align: 'center',
-                    text: 'SL #',
+                    text: 'Image',
                     sortable: true,
                     value: 'index'
                 },
                 {
-                    align: 'center',
+                    align: 'Left',
                     text: 'Title',
                     sortable: true,
                     value: 'title'
@@ -491,6 +502,7 @@ export default {
             codeCategories: [],
             chapterHeading: {
                 title: '',
+                image: '',
                 code_category: {
                     chapter: '',
                     section: ''
@@ -514,14 +526,32 @@ export default {
                         right: 0,
                         bottom: 0,
                         left: 0
+                    },
+                    tooltips: {
+                        enabled: true
                     }
-                }
+                },
             },
             sheet: null,
             countries: [{ 'id': null, 'name': 'All' }],
             suppliers: [],
             selectedCountryId: null,
             graphData: [],
+            images: [
+                'https://cdn.pixabay.com/photo/2018/07/26/07/45/valais-3562988__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/06/26/17/16/daisies-5343423__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/06/11/20/06/dog-5288071__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/06/15/02/03/leaves-5300030__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/04/20/09/42/seagulls-5067489__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/06/26/00/25/summer-5341326__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/08/25/00/48/mountains-5515324__340.jpg',
+                'https://cdn.pixabay.com/photo/2017/08/27/00/44/cocktail-2684866__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/08/26/16/15/taj-mahal-5519945__340.jpg',
+                'https://cdn.pixabay.com/photo/2017/12/08/12/25/berlin-3005717__340.jpg',
+                'https://cdn.pixabay.com/photo/2015/05/14/16/02/sandcastle-766949__340.jpg',
+                'https://cdn.pixabay.com/photo/2020/08/22/21/58/boat-5509457__340.jpg'
+
+            ]
         }
     },
 
@@ -641,7 +671,10 @@ export default {
         resetItem() {
             this.codeCategory = {
                 title: '',
-                code_category_id: 0
+                code_category: {
+                    chapter: '',
+                    section: ''
+                }
             }
         },
         indexGenerate(item) {
@@ -754,12 +787,12 @@ export default {
                 })
         },
         saveChapterHeading() {
-            const baseURI = '/api/v1/chapter-heading'
+            const baseURI = '/api/v1/chapter-headings'
             this.$http
                 .post(baseURI, this.chapterHeading)
                 .then(result => {
-                    this.dialogRolePermission = false
-                    this.fetchItems()
+                    this.dialog = false
+                    this.fetchChapterHeadings()
                     this.showSnackbar(result.data.message, 'success')
                 })
                 .catch(error => {

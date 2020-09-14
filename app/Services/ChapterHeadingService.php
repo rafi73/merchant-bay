@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Storage;
 
 class ChapterHeadingService implements ServiceInterface
 {
@@ -33,7 +35,14 @@ class ChapterHeadingService implements ServiceInterface
      */
     public function create(array $request): ChapterHeading
     {
-        //dd($request);
+        $base64_image = $request['image'];
+        @list($type, $file_data) = explode(';', $base64_image);
+        @list(, $file_data) = explode(',', $file_data);
+        $imageName = Str::random(10) . '.' . 'png';
+        Storage::disk('local')->put($imageName, base64_decode($file_data));
+        $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
+        //dd($storagePath);
+        $request['image'] = $storagePath;
         return ChapterHeading::create($request);
     }
 
