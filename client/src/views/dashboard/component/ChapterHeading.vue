@@ -31,7 +31,8 @@
                         <v-data-table
                             :headers="headers"
                             :items="chapterHeadings"
-                            :items-per-page="5"
+                            :items-per-page="10"
+                            :options.sync="pagination"
                             :loading="loading"
                             :server-items-length="totalItems"
                             :footer-props="{
@@ -177,18 +178,15 @@
             hide-overlay
             transition="dialog-bottom-transition"
             scrollable
-            fullscreen
+            max-width="1200px"
         >
             <v-card tile>
                 <v-toolbar flat dark color="primary">
                     <v-btn icon dark @click="dialogDetails = false">
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
-                    <v-toolbar-title>Settings</v-toolbar-title>
+                    <v-toolbar-title>Detail statistics</v-toolbar-title>
                     <v-spacer></v-spacer>
-                    <v-toolbar-items>
-                        <v-btn dark text @click="dialogDetails = false">Save</v-btn>
-                    </v-toolbar-items>
                     <v-menu bottom right offset-y>
                         <template v-slot:activator="{ on, attrs }">
                             <v-btn dark icon v-bind="attrs" v-on="on">
@@ -205,23 +203,39 @@
                 <v-card-text>
                     <v-spacer></v-spacer>
                     <v-col cols="12">
-                        <base-material-card
-                            class="v-card-profile"
-                            avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
-                        >
-                            <v-card-text class="text-center">
-                                <h6 class="display-1 mb-1 grey--text">{{chapterHeading.title}}</h6>
-
-                                <h4
-                                    class="display-2 font-weight-light mb-3 black--text"
-                                >{{chapterHeading.code_category.chapter}}</h4>
-
-                                <p
-                                    class="font-weight-light grey--text"
-                                >{{chapterHeading.code_category.section}}</p>
+                        <v-card class="mx-auto">
+                            <v-card-text>
+                                <v-row align="center">
+                                    <v-row>
+                                        <v-card max-width="375" class="mx-auto">
+                                            <v-img
+                                                src="https://cdn.vuetifyjs.com/images/lists/ali.png"
+                                                height="300px"
+                                                dark
+                                            ></v-img>
+                                        </v-card>
+                                    </v-row>
+                                    <v-row>
+                                        <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+                                            <h4
+                                                class="display-2 font-weight-light mb-3 black--text"
+                                            >Heading ID : {{chapterHeading.id}}</h4>
+                                            <p
+                                                class="font-weight-light black--text"
+                                            >Heading Title : {{chapterHeading.title}}</p>
+                                            <p
+                                                class="font-weight-light black--text"
+                                            >Heading Chapter : {{chapterHeading.code_category.chapter}}</p>
+                                            <p
+                                                class="font-weight-light black--text"
+                                            >Heading Section : {{chapterHeading.code_category.section}}</p>
+                                        </v-form>
+                                    </v-row>
+                                </v-row>
                             </v-card-text>
-                        </base-material-card>
+                        </v-card>
                     </v-col>
+
                     <v-spacer></v-spacer>
                     <v-col cols="12">
                         <v-select
@@ -263,12 +277,15 @@
                                 </v-tooltip>
                             </template>
 
-                            <h4 class="card-title font-weight-light mt-2 ml-2">Export History</h4>
+                            <h4
+                                class="card-title font-weight-light mt-2 ml-2"
+                            >Export scenerio within {{selectedCountryId}} country</h4>
 
                             <p class="d-inline-flex font-weight-light ml-2 mt-1">
-                                <v-icon color="green" small>mdi-arrow-up</v-icon>
-                                <span class="green--text">55%</span>&nbsp;
-                                increase in this year's sales
+                                This Product is exported to
+                                <v-icon color="green" small>mdi-home-export-outline</v-icon>
+                                <span class="green--text">{{ countries.length }}&nbsp;</span>&nbsp;
+                                countries from Bangladeshi Manufacturers
                             </p>
 
                             <template v-slot:actions>
@@ -281,41 +298,69 @@
                     </v-col>
                     <v-spacer></v-spacer>
                     <v-col cols="12">
-                        <v-sheet class="mx-auto" elevation="8">
-                            <v-slide-group v-model="sheet" class="pa-4" center-active show-arrows>
-                                <v-slide-item
-                                    v-for="n in suppliers.length"
-                                    :key="n"
-                                    v-slot:default="{ active, toggle }"
+                        <base-material-card
+                            color="primary"
+                            title="You can source this product from these factories"
+                        >
+                            <v-sheet class="mx-auto" elevation="8">
+                                <v-slide-group
+                                    v-model="sheet"
+                                    class="pa-4"
+                                    center-active
+                                    show-arrows
                                 >
-                                    <v-card
-                                        :color="active ? 'primary' : 'grey lighten-1'"
-                                        class="ma-4"
-                                        height="380"
-                                        width="230"
-                                        @click="toggle"
+                                    <v-slide-item
+                                        v-for="n in suppliers.length"
+                                        :key="n"
+                                        v-slot:default="{ active, toggle }"
                                     >
-                                        <base-material-card
-                                            class="v-card-profile"
-                                            avatar="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
+                                        <v-card
+                                            :color="active ? 'primary' : 'grey lighten-1'"
+                                            class="ma-4"
+                                            height="400"
+                                            width="344"
+                                            @click="toggle"
                                         >
-                                            <v-card-text class="text-center">
-                                                <h6
-                                                    class="display-2 font-weight-light mb-3 black--text"
-                                                >{{suppliers[n].company_name}}</h6>
-                                                <p
-                                                    class="font-weight-light grey--text"
-                                                >{{suppliers[n].company_email}}</p>
+                                            <v-card max-width="344" class="mx-auto">
+                                                <v-list-item>
+                                                    <v-list-item-content>
+                                                        <v-list-item-title
+                                                            class="headline"
+                                                        >{{suppliers[n].company_name}}</v-list-item-title>
+                                                        <v-list-item-subtitle>{{suppliers[n].company_email}}</v-list-item-subtitle>
+                                                    </v-list-item-content>
+                                                </v-list-item>
 
-                                                <p
-                                                    class="font-weight-light grey--text"
-                                                >Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye...</p>
-                                            </v-card-text>
-                                        </base-material-card>
-                                    </v-card>
-                                </v-slide-item>
-                            </v-slide-group>
-                        </v-sheet>
+                                                <v-img
+                                                    src="https://cdn.vuetifyjs.com/images/cards/mountain.jpg"
+                                                    height="194"
+                                                ></v-img>
+
+                                                <v-card-text>Visit ten places on our planet that are undergoing the biggest changes today.</v-card-text>
+
+                                                <v-card-actions>
+                                                    <v-btn
+                                                        text
+                                                        color="deep-purple accent-4"
+                                                    >Factory visit</v-btn>
+                                                    <v-btn
+                                                        text
+                                                        color="deep-purple accent-4"
+                                                    >Send and RFW</v-btn>
+                                                    <v-spacer></v-spacer>
+                                                    <!-- <v-btn icon>
+                                                    <v-icon>mdi-heart</v-icon>
+                                                </v-btn>
+                                                <v-btn icon>
+                                                    <v-icon>mdi-share-variant</v-icon>
+                                                    </v-btn>-->
+                                                </v-card-actions>
+                                            </v-card>
+                                        </v-card>
+                                    </v-slide-item>
+                                </v-slide-group>
+                            </v-sheet>
+                        </base-material-card>
                     </v-col>
                 </v-card-text>
 
@@ -442,7 +487,9 @@ export default {
             menus: [],
             validRolePermission: false,
             codeCategories: [],
-            chapterHeading: {},
+            chapterHeading: {
+                code_category: {}
+            },
             chapterHeadings: [],
             dialogDetails: false,
             dailySalesChart: {
@@ -611,7 +658,7 @@ export default {
         },
         fetchChapterHeadings() {
             this.loading = true
-            const baseURI = `/api/v1/chapter-headings`
+            const baseURI = `/api/v1/chapter-headings?page=${this.pagination.page}`
             this.$http
                 .get(baseURI)
                 .then(result => {
