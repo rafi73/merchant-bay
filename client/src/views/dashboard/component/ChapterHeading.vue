@@ -4,7 +4,7 @@
         <!-- Content Start-->
         <v-row>
             <v-col cols="12" md="12">
-                <base-material-card
+                <!-- <base-material-card
                     dark
                     color="primary"
                     icon="mdi-atom"
@@ -98,17 +98,23 @@
                             </template>
                         </v-data-table>
                     </v-card-text>
-                </base-material-card>
+                </base-material-card>-->
 
                 <v-app>
                     <v-container class="py-3">
-                        <div class="display-2">Endless scrolling with v-lazy</div>
+                        <div class="display-2">Chapter Headings</div>
                         <h5>
                             <span v-text="visiblePosts"></span> of
                             <span v-text="posts.length"></span> posts shown
                         </h5>
                         <v-row class="fill-height overflow-y-auto" v-if="posts.length">
-                            <v-col lg="3" md="4" sm="6" cols="12" v-for="(post, index) in chapterHeadings">
+                            <v-col
+                                lg="3"
+                                md="4"
+                                sm="6"
+                                cols="12"
+                                v-for="(post, index) in chapterHeadings"
+                            >
                                 <v-sheet min-height="250" class="fill-height" color="transparent">
                                     <v-lazy
                                         v-model="post.isActive"
@@ -121,24 +127,28 @@
                                             <v-img
                                                 class="white--text align-end"
                                                 height="200px"
-                                                src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                                :src="images[Math.floor(Math.random()*images.length)]"
                                             >
-                                                <v-card-title>{{post.title}}</v-card-title>
+                                                <!-- <v-card-title>{{post.title}}</v-card-title> -->
                                             </v-img>
 
-                                            <v-card-subtitle class="pb-0">Number 10</v-card-subtitle>
+                                            <v-card-subtitle class="pb-0">{{post.title}}</v-card-subtitle>
 
                                             <v-card-text class="text--primary">
-                                                <div>Whitehaven Beach</div>
+                                                <div>{{post.code_category.heading.slice(0, 50)}}</div>
 
-                                                <div>Whitsunday Island, Whitsunday Islands</div>
+                                                <div>{{post.code_category.chapter}}</div>
                                             </v-card-text>
 
-                                            <v-card-actions>
-                                                <v-btn color="orange" text @click="showDetails(post)">Share</v-btn>
-
-                                                <v-btn color="orange" text>Explore</v-btn>
-                                            </v-card-actions>
+                                            <v-row align="center">
+                                                <v-card-actions>
+                                                    <v-btn
+                                                        color="orange"
+                                                        text
+                                                        @click="showDetails(post)"
+                                                    >Show details</v-btn>
+                                                </v-card-actions>
+                                            </v-row>
                                         </v-card>
                                     </v-lazy>
                                 </v-sheet>
