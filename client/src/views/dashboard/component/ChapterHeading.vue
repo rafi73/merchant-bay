@@ -27,32 +27,25 @@
                                         }"
                                     class="fill-height"
                                 >
-                                    <v-card class="mx-auto" max-width="400">
+                                    <v-card class="mx-auto" max-width="400" height="350">
                                         <v-img
                                             class="white--text align-end"
                                             height="200px"
                                             :src="images[Math.floor(Math.random()*images.length)]"
-                                        >
-                                            <!-- <v-card-title>{{post.title}}</v-card-title> -->
-                                        </v-img>
+                                        ></v-img>
 
-                                        <v-card-subtitle class="pb-0">{{post.title}}</v-card-subtitle>
+                                        <v-card-subtitle class="pb-0">{{post.title.slice(0, 20)}}</v-card-subtitle>
 
                                         <v-card-text class="text--primary">
-                                            <div>{{post.code_category.heading.slice(0, 50)}}</div>
+                                            <div>{{post.code_category.heading.slice(0, 20)}}</div>
 
-                                            <div>{{post.code_category.chapter}}</div>
+                                            <div>{{post.code_category.chapter.slice(0, 20)}}</div>
                                         </v-card-text>
+                                        <v-divider></v-divider>
 
-                                        <v-row align="center">
-                                            <v-card-actions>
-                                                <v-btn
-                                                    color="orange"
-                                                    text
-                                                    @click="showDetails(post)"
-                                                >Show details</v-btn>
-                                            </v-card-actions>
-                                        </v-row>
+                                        <v-card-actions>
+                                            <v-btn @click="showDetails(post)" text>Show details</v-btn>
+                                        </v-card-actions>
                                     </v-card>
                                 </v-lazy>
                             </v-sheet>
@@ -462,7 +455,7 @@ export default {
                 },
             },
             sheet: null,
-            countries: [{ 'id': null, 'name': 'All' }],
+            countries: [{ 'id': null, 'name': 'All Countries' }],
             suppliers: [],
             selectedCountryId: null,
             graphData: [],
@@ -678,7 +671,7 @@ export default {
             this.chapterHeading = item
             this.dialogDetails = true
             this.selectedCountryId = null
-            this.countries = [{ 'id': null, 'name': 'All' }]
+            this.countries = [{ 'id': null, 'name': 'All Countries' }]
             this.fetchExports()
         }
     },
