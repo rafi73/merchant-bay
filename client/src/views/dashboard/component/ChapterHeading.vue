@@ -99,6 +99,53 @@
                         </v-data-table>
                     </v-card-text>
                 </base-material-card>
+
+                <v-app>
+                    <v-container class="py-3">
+                        <div class="display-2">Endless scrolling with v-lazy</div>
+                        <h5>
+                            <span v-text="visiblePosts"></span> of
+                            <span v-text="posts.length"></span> posts shown
+                        </h5>
+                        <v-row class="fill-height overflow-y-auto" v-if="posts.length">
+                            <v-col lg="3" md="4" sm="6" cols="12" v-for="(post, index) in posts">
+                                <v-sheet min-height="250" class="fill-height" color="transparent">
+                                    <v-lazy
+                                        v-model="post.isActive"
+                                        :options="{
+                                            threshold: .5
+                                        }"
+                                        class="fill-height"
+                                    >
+                                        <v-card class="mx-auto" max-width="400">
+                                            <v-img
+                                                class="white--text align-end"
+                                                height="200px"
+                                                src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                                            >
+                                                <v-card-title>Top 10 Australian beaches</v-card-title>
+                                            </v-img>
+
+                                            <v-card-subtitle class="pb-0">Number 10</v-card-subtitle>
+
+                                            <v-card-text class="text--primary">
+                                                <div>Whitehaven Beach</div>
+
+                                                <div>Whitsunday Island, Whitsunday Islands</div>
+                                            </v-card-text>
+
+                                            <v-card-actions>
+                                                <v-btn color="orange" text>Share</v-btn>
+
+                                                <v-btn color="orange" text>Explore</v-btn>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-lazy>
+                                </v-sheet>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-app>
             </v-col>
         </v-row>
         <!-- Content End-->
@@ -202,11 +249,6 @@
                                 <v-icon>mdi-dots-vertical</v-icon>
                             </v-btn>
                         </template>
-                        <v-list>
-                            <v-list-item v-for="(item, i) in items" :key="i" @click="() => {}">
-                                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
                     </v-menu>
                 </v-toolbar>
                 <v-card-text>
@@ -226,7 +268,7 @@
                                         </v-card>
                                     </v-row>
                                     <v-row>
-                                        <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+                                        <v-form ref="form">
                                             <h4
                                                 class="display-2 font-weight-light mb-3 black--text"
                                             >Heading ID : {{chapterHeading.id}}</h4>
@@ -402,7 +444,7 @@ import DialogDelete from './../components/core/DialogDelete'
 import VImageInput from 'vuetify-image-input'
 
 export default {
-    name: 'Chapter Heading',
+    name: 'Chapter',
     components: {
         Snackbar, DialogDelete, [VImageInput.name]: VImageInput,
     },
@@ -473,27 +515,6 @@ export default {
             sort: '',
             totalItems: 0,
             lastPage: 0,
-            dialogRolePermission: false,
-            permissions: [],
-            selectedPermissions: [],
-            permissionHeaders: [
-                {
-                    text: 'Select Permissions',
-                    sortable: true,
-                    value: 'title'
-                }
-            ],
-            menuHeaders: [
-                {
-                    text: 'Select Menus',
-                    sortable: true,
-                    value: 'title'
-                }
-            ],
-            rolePermission: {},
-            roleMenu: {},
-            menus: [],
-            validRolePermission: false,
             codeCategories: [],
             chapterHeading: {
                 title: '',
@@ -546,13 +567,17 @@ export default {
                 'https://cdn.pixabay.com/photo/2015/05/14/16/02/sandcastle-766949__340.jpg',
                 'https://cdn.pixabay.com/photo/2020/08/22/21/58/boat-5509457__340.jpg'
 
-            ]
+            ],
+            posts: []
         }
     },
 
     computed: {
         formTitle() {
             return this.editMode ? 'Edit Item' : 'New Item'
+        },
+        visiblePosts() {
+            return this.posts.filter(p => p.isActive).length
         }
     },
 
@@ -561,31 +586,15 @@ export default {
         this.fetchChapterHeadings()
         this.fetchSuppliers()
         // this.fetchCounties()
+        this.addPosts()
     },
 
     methods: {
-        fetchItems() {
-            this.loading = true
-            const baseURI = `/admin/v1/roles?limit=${this.pagination.itemsPerPage}&page=${this.pagination.page}&sort=${this.sort}`
-            this.$http
-                .get(baseURI)
-                .then(result => {
-                    this.roles = result.data.data.rows
-                    this.setupPagination(result.data.data)
-                    this.loading = false
-                })
-                .catch(error => {
-                    this.loading = false
-                })
-        },
+
         editItem(item) {
             this.editMode = true
             this.role = Object.assign({}, item)
             this.dialog = true
-        },
-        deleteItem(item) {
-            this.dialogConfirmDelete = true
-            this.role = Object.assign({}, item)
         },
         addItem() {
             this.resetItem()
@@ -604,27 +613,6 @@ export default {
                 }
             })
         },
-        validateRolePermission() {
-            this.$refs.formRolePermission.validate()
-            this.$nextTick(() => {
-                if (this.validRolePermission) {
-                    this.savePermission()
-                }
-            })
-        },
-        create() {
-            const baseURI = '/admin/v1/roles'
-            this.$http
-                .post(baseURI, this.role)
-                .then(result => {
-                    this.dialog = false
-                    this.fetchItems()
-                    this.showSnackbar(result.data.message, 'success')
-                })
-                .catch(error => {
-                    this.showSnackbar(error.response, 'error')
-                })
-        },
         update() {
             const baseURI = `/admin/v1/roles/${this.role.id}`
             this.$http
@@ -636,22 +624,6 @@ export default {
                 })
                 .catch(error => {
                     this.showSnackbar(error.response, 'error')
-                })
-        },
-        erase() {
-            this.dialogConfirmDelete = false
-            this.loading = true
-            const baseURI = `/admin/v1/roles/${this.role.id}`
-            this.$http
-                .delete(baseURI)
-                .then(result => {
-                    this.loading = false
-                    this.fetchItems()
-                    this.showSnackbar(result.data.message, 'success')
-                })
-                .catch(error => {
-                    this.loading = false
-                    this.showSnackbar(error.response, 'success')
                 })
         },
         setupPagination(pagination) {
@@ -686,10 +658,6 @@ export default {
         },
         closeSnackbar() {
             this.snackbar.visible = false;
-        },
-        changeMenu(menuID) {
-            this.selectedPermissions = []
-            this.fetchPermission(this.role.id, menuID)
         },
         fetchChapterHeadings() {
             this.loading = true
@@ -800,6 +768,12 @@ export default {
             this.selectedCountryId = null
             this.countries = [{ 'id': null, 'name': 'All' }]
             this.fetchExports()
+        },
+        addPosts() {
+            this.$http.get('https://jsonplaceholder.typicode.com/posts')
+                .then(response => {
+                    this.posts = response.data
+                })
         }
     },
     watch: {
@@ -808,13 +782,7 @@ export default {
                 this.$refs.form.resetValidation()
             }
         },
-        dialogRolePermission() {
-            if (this.$refs.formRolePermission) {
-                this.$refs.formRolePermission.resetValidation()
-            }
-
-        }
-    }
+    },
 }
 </script>
 
