@@ -181,14 +181,19 @@ class ExportService implements ServiceInterface
     {
         $lineData = Export::where('country_id', $countryId)
             ->where('chapter_heading_id', $chapterHeadingId)
-            ->distinct()->orderBy('fiscal_year')
+            ->orderBy('fiscal_year')
             ->select('fiscal_year', 'usd')
-            ->get()
-            ->toArray();
+            ->get();
+
+        $lineMap = new \Ds\Map();
+        foreach ($lineData as $key => $value) {
+            $sum = $lineMap->hasKey($value->fiscal_year) ? $lineMap->get($value->fiscal_year) + $value->usd / 1000000 : $value->usd / 1000000;
+            $lineMap->put($value->fiscal_year, $sum);
+        }
 
         return [
-            'fiscal_years' => array_column($lineData, 'fiscal_year'),
-            'usd' => [array_column($lineData, 'usd')],
+            'fiscal_years' => $lineMap->keys(),
+            'usd' => [$lineMap->values()],
         ];
     }
 }

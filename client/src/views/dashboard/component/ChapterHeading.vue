@@ -295,7 +295,7 @@
                             <p class="d-inline-flex font-weight-light ml-2 mt-1">
                                 This Product is exported to
                                 <v-icon color="green" small>mdi-home-export-outline</v-icon>
-                                <span class="green--text">{{ countries.length }}&nbsp;</span>&nbsp;
+                                <span class="green--text">{{ (countries.length) -1 }}&nbsp;</span>&nbsp;
                                 countries from Bangladeshi Manufacturers
                             </p>
 
@@ -345,7 +345,7 @@
                                                 </v-list-item>
 
                                                 <v-img
-                                                    src="https://cdn.vuetifyjs.com/images/cards/mountain.jpg"
+                                                    :src="images[Math.floor(Math.random()*images.length)]"
                                                     height="194"
                                                 ></v-img>
 
@@ -359,14 +359,9 @@
                                                     <v-btn
                                                         text
                                                         color="deep-purple accent-4"
+                                                        :href="`https://www.merchantbay.com/#rfqFormModal/${suppliers[n].id}`"
                                                     >Send and RFW</v-btn>
                                                     <v-spacer></v-spacer>
-                                                    <!-- <v-btn icon>
-                                                    <v-icon>mdi-heart</v-icon>
-                                                </v-btn>
-                                                <v-btn icon>
-                                                    <v-icon>mdi-share-variant</v-icon>
-                                                    </v-btn>-->
                                                 </v-card-actions>
                                             </v-card>
                                         </v-card>
@@ -669,8 +664,9 @@ export default {
             this.fetchChapterHeadings()
         },
         resetItem() {
-            this.codeCategory = {
+            this.chapterHeading = {
                 title: '',
+                image: '',
                 code_category: {
                     chapter: '',
                     section: ''
@@ -703,7 +699,6 @@ export default {
                 .then(result => {
                     this.chapterHeadings = result.data.data
                     this.totalItems = result.data.meta.total
-                    console.log(this.chapterHeadings)
                     this.loading = false
                 })
                 .catch(error => {
@@ -759,7 +754,6 @@ export default {
                     this.dailySalesChart.data.labels = result.data.data.fiscal_years
                     this.dailySalesChart.data.series = result.data.data.usd
                     this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0])
-                    console.log()
                     this.loading = false
                 })
                 .catch(error => {
@@ -780,7 +774,7 @@ export default {
                 .then(result => {
                     this.dailySalesChart.data.labels = result.data.data.fiscal_years
                     this.dailySalesChart.data.series = result.data.data.usd
-                    this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0]) + 5
+                    this.dailySalesChart.options.high = Math.max(...result.data.data.usd[0])
                     this.loading = false
                 })
                 .catch(error => {
