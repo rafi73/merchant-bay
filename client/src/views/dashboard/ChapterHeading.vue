@@ -244,7 +244,7 @@
 
                                 <h4
                                     class="card-title font-weight-light mt-2 ml-2"
-                                >Export scenerio within {{selectedCountryId}} country</h4>
+                                >Export scenerio within {{countries.find(o => o.id === selectedCountryId).name}}</h4>
 
                                 <p class="d-inline-flex font-weight-light ml-2 mt-1">
                                     This Product is exported to

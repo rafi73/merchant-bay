@@ -3,15 +3,11 @@
 namespace App\Services;
 
 use App\Contracts\ServiceInterface;
-use App\Exceptions\ExportService\ExportBulkDataErrorException;
-use App\Exceptions\ExportService\ExportBulkStructureException;
 use App\Exceptions\ExportService\ExportNotFoundException;
 use App\Exceptions\ExportService\ExportOwnerMismatchedException;
+use App\Models\Country;
 use App\Models\Export;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\QueryException;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Facades\Auth;
 
 class ExportService implements ServiceInterface
 {
@@ -78,19 +74,24 @@ class ExportService implements ServiceInterface
      */
     public function getExportData(int $chapterHeadingId): array
     {
-        $graphData = Export::where('chapter_heading_id', $chapterHeadingId);
+        $countries = Country::whereHas('exports', function ($query) use ($chapterHeadingId) {
+            return $query->where('chapter_heading_id', '=', $chapterHeadingId);
+        })->get();
 
-        $countries = $graphData->with('country')->get()->toArray();
-        $lineData = $graphData->orderBy('fiscal_year')->select('fiscal_year', 'usd')->get();
+        $lineData = Export::where('chapter_heading_id', $chapterHeadingId)
+            ->orderBy('fiscal_year')
+            ->select('fiscal_year', 'usd')
+            ->get();
 
         $lineMap = new \Ds\Map();
         foreach ($lineData as $key => $value) {
-            $sum = $lineMap->hasKey($value->fiscal_year) ? $lineMap->get($value->fiscal_year) + $value->usd / 1000000 : $value->usd / 1000000;
+            $usdInMillion = $value->usd / 1000000;
+            $sum = $lineMap->hasKey($value->fiscal_year) ? $lineMap->get($value->fiscal_year) + $usdInMillion : $usdInMillion;
             $lineMap->put($value->fiscal_year, $sum);
         }
 
         return [
-            'countries' => array_column($countries, 'country'),
+            'countries' => $countries,
             'fiscal_years' => $lineMap->keys(),
             'usd' => [$lineMap->values()],
         ];
@@ -111,7 +112,8 @@ class ExportService implements ServiceInterface
 
         $lineMap = new \Ds\Map();
         foreach ($lineData as $key => $value) {
-            $sum = $lineMap->hasKey($value->fiscal_year) ? $lineMap->get($value->fiscal_year) + $value->usd / 1000000 : $value->usd / 1000000;
+            $usdInMillion = $value->usd / 1000000;
+            $sum = $lineMap->hasKey($value->fiscal_year) ? $lineMap->get($value->fiscal_year) + $usdInMillion : $usdInMillion;
             $lineMap->put($value->fiscal_year, $sum);
         }
 
