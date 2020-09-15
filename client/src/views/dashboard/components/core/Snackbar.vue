@@ -6,12 +6,12 @@
         :left="x === 'left'"
         :multi-line="mode === 'multi-line'"
         :right="x === 'right'"
-        :timeout="0"
+        :timeout="-1"
         :top="y === 'top'"
         :vertical="mode === 'vertical'"
     >
         {{ text }}
-        <v-btn dark text @click.native="$emit('requestClose')">Close</v-btn>
+        <v-btn dark text @click.native="$emit('resquest-case')">Close</v-btn>
     </v-snackbar>
 </template>
 
@@ -22,7 +22,7 @@ export default {
     data() {
         return {
             mode: '',
-            timeout: 0,
+            timeout: -1,
             x: 'right',
             y: 'bottom'
         }

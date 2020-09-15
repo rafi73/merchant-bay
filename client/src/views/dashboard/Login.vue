@@ -52,7 +52,7 @@
             :visible="snackbar.visible"
             :text="snackbar.text"
             :color="snackbar.color"
-            v-on:requestClose="closeSnackbar()"
+            v-on:resquest-case="closeSnackbar()"
         ></Snackbar>
         <!-- Snackbar End-->
     </v-app>
