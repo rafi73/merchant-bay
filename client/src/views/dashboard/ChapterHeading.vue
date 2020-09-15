@@ -293,8 +293,8 @@
                                                         <v-list-item-content>
                                                             <v-list-item-title
                                                                 class="headline"
-                                                            >{{suppliers[n].company_name}}</v-list-item-title>
-                                                            <v-list-item-subtitle>{{suppliers[n].company_email}}</v-list-item-subtitle>
+                                                            >{{!!suppliers[n] ? suppliers[n].company_name: ''}}</v-list-item-title>
+                                                            <v-list-item-subtitle>{{!!suppliers[n] ? suppliers[n].company_email: ''}}</v-list-item-subtitle>
                                                         </v-list-item-content>
                                                     </v-list-item>
 
@@ -313,7 +313,7 @@
                                                         <v-btn
                                                             text
                                                             color="deep-purple accent-4"
-                                                            :href="`https://www.merchantbay.com/#rfqFormModal/${suppliers[n].id}`"
+                                                            :href="`https://www.merchantbay.com/#rfqFormModal/${!!suppliers[n] ? suppliers[n].id: ''}`"
                                                         >Send and RFW</v-btn>
                                                         <v-spacer></v-spacer>
                                                     </v-card-actions>
