@@ -3,7 +3,6 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Storage;
 
 class ChapterHeadingResource extends JsonResource
 {
@@ -18,7 +17,7 @@ class ChapterHeadingResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'image' => Storage::url($this->image),
+            'image' => $this->image,
             'code_category' => $this->codeCategory,
         ];
     }

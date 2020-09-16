@@ -36,9 +36,8 @@ class ChapterHeadingService implements ServiceInterface
         @list(, $file_data) = explode(',', $file_data);
         $imageName = Str::random(10) . '.' . 'png';
         Storage::disk('local')->put($imageName, base64_decode($file_data));
-        $storagePath = Storage::disk('local')->getDriver()->getAdapter()->getPathPrefix();
 
-        $request['image'] = $storagePath;
+        $request['image'] = $imageName;
         return ChapterHeading::create($request);
     }
 

@@ -49,10 +49,10 @@
                                 <tr>
                                     <td align="center">
                                         <v-img
-                                            :src="images[Math.floor(Math.random()*images.length)]"
                                             max-height="40px"
                                             max-width="40px"
                                             aspect-ratio="1"
+                                            :src="require(`@/../../storage/app/${row.item.image}`)"
                                         ></v-img>
                                     </td>
                                     <td align="left">{{row.item.title.slice(0, 50)}}</td>
