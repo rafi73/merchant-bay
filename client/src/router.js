@@ -8,7 +8,7 @@ export default new Router({
     base: process.env.BASE_URL,
     routes: [
         {
-            path: '/',
+            path: '/admin/',
             component: () => import('@/views/dashboard/Index'),
             children: [
                 // Dashboard
@@ -16,6 +16,11 @@ export default new Router({
                     name: 'Dashboard',
                     path: '',
                     component: () => import('@/views/dashboard/Dashboard'),
+                },
+                {	
+                    name: 'Chapter Heading',	
+                    path: 'chapter-headings',	
+                    component: () => import('@/views/dashboard/component/ChapterHeading'),	
                 },
             ],
         },
