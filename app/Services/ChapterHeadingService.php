@@ -20,7 +20,7 @@ class ChapterHeadingService implements ServiceInterface
      */
     public function getAll(): LengthAwarePaginator
     {
-        return ChapterHeading::paginate(100);
+        return ChapterHeading::paginate(10);
     }
 
     /**

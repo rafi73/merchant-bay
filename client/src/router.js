@@ -12,13 +12,8 @@ export default new Router({
             component: () => import('@/views/dashboard/Index'),
             children: [
                 // Dashboard
-                {
-                    name: 'Dashboard',
-                    path: '',
-                    component: () => import('@/views/dashboard/Dashboard'),
-                },
                 {	
-                    name: 'Chapter Heading',	
+                    name: 'Admin',	
                     path: 'chapter-headings',	
                     component: () => import('@/views/dashboard/component/ChapterHeading'),	
                 },
@@ -26,8 +21,8 @@ export default new Router({
         },
         {
             name: 'Chapter Heading',
-            path: '/chapter-headings',
-            component: () => import('@/views/dashboard/ChapterHeading'),
+            path: '/',
+            component: () => import('@/views/dashboard/Landing'),
         },
         {
             path: '/login',

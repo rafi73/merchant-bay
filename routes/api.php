@@ -19,12 +19,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'v1'], function ($router) {
-    Route::get('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@getChapterHeadings');
+    Route::get('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@index');
     Route::get('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@show');
     Route::post('chapter-headings', 'App\Http\Controllers\ChapterHeadingController@create');
     Route::put('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@update');
     Route::delete('chapter-headings/{id}', 'App\Http\Controllers\ChapterHeadingController@delete');
     Route::post('chapter-heading-bulk', 'App\Http\Controllers\ChapterHeadingController@storeBulk');
+    Route::get('chapter-headings-front', 'App\Http\Controllers\ChapterHeadingController@getChapterHeadings');
 
     Route::get('code-categories', 'App\Http\Controllers\CodeCategoryController@getCodeCategories');
     Route::get('suppliers', 'App\Http\Controllers\SupplierController@getSuppliers');

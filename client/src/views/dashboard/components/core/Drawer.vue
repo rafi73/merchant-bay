@@ -108,7 +108,7 @@ export default {
             {
                 title: 'Chapter Heading',
                 icon: 'mdi-atom',
-                to: '/chapter-headings',
+                to: '/admin/chapter-headings',
             },
         ],
     }),

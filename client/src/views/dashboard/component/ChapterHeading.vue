@@ -202,11 +202,6 @@
                                 <v-icon>mdi-dots-vertical</v-icon>
                             </v-btn>
                         </template>
-                        <v-list>
-                            <v-list-item v-for="(item, i) in items" :key="i" @click="() => {}">
-                                <v-list-item-title>{{ item.title }}</v-list-item-title>
-                            </v-list-item>
-                        </v-list>
                     </v-menu>
                 </v-toolbar>
                 <v-card-text>
@@ -226,7 +221,7 @@
                                         </v-card>
                                     </v-row>
                                     <v-row>
-                                        <v-form ref="form" v-model="valid" :lazy-validation="lazy">
+                                        <v-form ref="form">
                                             <h4
                                                 class="display-2 font-weight-light mb-3 black--text"
                                             >Heading ID : {{chapterHeading.id}}</h4>
@@ -402,7 +397,7 @@ import DialogDelete from './../components/core/DialogDelete'
 import VImageInput from 'vuetify-image-input'
 
 export default {
-    name: 'Chapter Heading',
+    name: 'chapter-heading',
     components: {
         Snackbar, DialogDelete, [VImageInput.name]: VImageInput,
     },

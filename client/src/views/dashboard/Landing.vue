@@ -571,7 +571,7 @@ export default {
         },
         fetchChapterHeadings() {
             this.loading = true
-            const baseURI = `/api/v1/chapter-headings`
+            const baseURI = `/api/v1/chapter-headings-front`
             this.$http
                 .get(baseURI)
                 .then(result => {
