@@ -24,10 +24,8 @@ import axios from 'axios'
 import moment from 'moment'
 import DateFormater from './helpers/dateFormater'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import VImageInput from 'vuetify-image-input';
 import '@mdi/font/css/materialdesignicons.css'
 
-Vue.component(VImageInput.name, VImageInput);
 
 Vue.use(DateFormater)
 

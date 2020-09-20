@@ -52,7 +52,7 @@
                                             max-height="40px"
                                             max-width="40px"
                                             aspect-ratio="1"
-                                            :src="require(`@/../../storage/app/${row.item.image}`)"
+                                            :src="require(`${row.item.image}`)"
                                         ></v-img>
                                     </td>
                                     <td align="left">{{row.item.title.slice(0, 50)}}</td>
@@ -135,12 +135,22 @@
                                 :rules="[v => !!v || 'Code Category is required']"
                             ></v-select>
 
-                            <v-image-input
-                                v-model="chapterHeading.image"
-                                :image-quality="0.85"
-                                clearable
-                                image-format="jpeg"
-                            />
+                            <!-- <v-image-input v-model="selectedImage" clearable image-format="jpeg" /> -->
+
+                            <div v-if="!chapterHeading.image">
+                                <h2>Select an image</h2>
+                                <input type="file" @change="onFileChange" />
+                            </div>
+                            <div v-else>
+                                <v-img
+                                    :src="chapterHeading.image"
+                                    aspect-ratio="1"
+                                    class="grey lighten-2"
+                                    max-height="300"
+                                />
+
+                                <button @click="removeImage">Remove image</button>
+                            </div>
                         </v-form>
                     </template>
                 </v-card-text>
@@ -394,7 +404,7 @@
 <script>
 import Snackbar from './../components/core/Snackbar'
 import DialogDelete from './../components/core/DialogDelete'
-import VImageInput from 'vuetify-image-input'
+import VImageInput from 'vuetify-image-input/a-la-carte'
 
 export default {
     name: 'chapter-heading',
@@ -541,7 +551,9 @@ export default {
                 'https://cdn.pixabay.com/photo/2015/05/14/16/02/sandcastle-766949__340.jpg',
                 'https://cdn.pixabay.com/photo/2020/08/22/21/58/boat-5509457__340.jpg'
 
-            ]
+            ],
+            selectedImage: null,
+            imageData: null
         }
     },
 
@@ -559,23 +571,10 @@ export default {
     },
 
     methods: {
-        fetchItems() {
-            this.loading = true
-            const baseURI = `/admin/v1/roles?limit=${this.pagination.itemsPerPage}&page=${this.pagination.page}&sort=${this.sort}`
-            this.$http
-                .get(baseURI)
-                .then(result => {
-                    this.roles = result.data.data.rows
-                    this.setupPagination(result.data.data)
-                    this.loading = false
-                })
-                .catch(error => {
-                    this.loading = false
-                })
-        },
         editItem(item) {
             this.editMode = true
-            this.role = Object.assign({}, item)
+            this.chapterHeading = item
+            this.selectedImage = require(`@/../../storage/app/${item.image}`)
             this.dialog = true
         },
         deleteItem(item) {
@@ -607,19 +606,6 @@ export default {
                 }
             })
         },
-        create() {
-            const baseURI = '/admin/v1/roles'
-            this.$http
-                .post(baseURI, this.role)
-                .then(result => {
-                    this.dialog = false
-                    this.fetchItems()
-                    this.showSnackbar(result.data.message, 'success')
-                })
-                .catch(error => {
-                    this.showSnackbar(error.response, 'error')
-                })
-        },
         update() {
             const baseURI = `/admin/v1/roles/${this.role.id}`
             this.$http
@@ -631,22 +617,6 @@ export default {
                 })
                 .catch(error => {
                     this.showSnackbar(error.response, 'error')
-                })
-        },
-        erase() {
-            this.dialogConfirmDelete = false
-            this.loading = true
-            const baseURI = `/admin/v1/roles/${this.role.id}`
-            this.$http
-                .delete(baseURI)
-                .then(result => {
-                    this.loading = false
-                    this.fetchItems()
-                    this.showSnackbar(result.data.message, 'success')
-                })
-                .catch(error => {
-                    this.loading = false
-                    this.showSnackbar(error.response, 'success')
                 })
         },
         setupPagination(pagination) {
@@ -677,10 +647,10 @@ export default {
         showSnackbar(message, color) {
             this.snackbar.text = message
             this.snackbar.color = color
-            this.snackbar.visible = true;
+            this.snackbar.visible = true
         },
         closeSnackbar() {
-            this.snackbar.visible = false;
+            this.snackbar.visible = false
         },
         changeMenu(menuID) {
             this.selectedPermissions = []
@@ -756,7 +726,6 @@ export default {
                 })
         },
         fetchExportsByCountry() {
-
             if (!this.selectedCountryId) {
                 this.fetchExports()
                 return
@@ -777,9 +746,20 @@ export default {
                 })
         },
         saveChapterHeading() {
+            let formData = new FormData()
+            formData.append('image', this.imageData)
+            formData.append('title', this.chapterHeading.title)
+            formData.append('code_category_id', this.chapterHeading.code_category_id)
+
+            let header = {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+
             const baseURI = '/api/v1/chapter-headings'
             this.$http
-                .post(baseURI, this.chapterHeading)
+                .post(baseURI, formData, header)
                 .then(result => {
                     this.dialog = false
                     this.fetchChapterHeadings()
@@ -795,6 +775,37 @@ export default {
             this.selectedCountryId = null
             this.countries = [{ 'id': null, 'name': 'All' }]
             this.fetchExports()
+        },
+        getBase64Image(img) {
+            var canvas = document.createElement("canvas")
+            canvas.width = img.width
+            canvas.height = img.height
+            var ctx = canvas.getContext("2d")
+            ctx.drawImage(img, 0, 0)
+            var dataURL = canvas.toDataURL("image/png")
+            return dataURL.replace(/^data:image\/(png|jpg);base64,/, "")
+        },
+        onFileChange(event) {
+            var files = event.target.files || event.dataTransfer.files
+            if (!files.length)
+                return
+
+            this.imageData = files[0]
+            this.chapterHeading.image = URL.createObjectURL(files[0])
+            console.log(this.chapterHeading)
+        },
+        createImage(file) {
+            var image = new Image()
+            var reader = new FileReader()
+            var vm = this
+
+            reader.onload = (e) => {
+                vm.image = e.target.result
+            }
+            reader.readAsDataURL(file)
+        },
+        removeImage: function (e) {
+            this.image = ''
         }
     },
     watch: {

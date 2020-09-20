@@ -17,7 +17,7 @@ class ChapterHeadingResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'image' => $this->image,
+            'image' => storage_path('uploads') . '/' . $this->image,
             'code_category' => $this->codeCategory,
         ];
     }

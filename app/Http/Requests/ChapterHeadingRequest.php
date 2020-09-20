@@ -31,7 +31,7 @@ class ChapterHeadingRequest extends FormRequest
         return [
             'title' => 'required|string|max:50',
             'code_category_id' => 'required|numeric|between:0,9999.99',
-            'image' => 'required|string',
+            'image' => 'required|max:20480|mimes:jpeg,jpg,png,gif',
         ];
     }
 }

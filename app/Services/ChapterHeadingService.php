@@ -8,8 +8,8 @@ use App\Exceptions\ChapterHeadingService\ChapterHeadingOwnerMismatchedException;
 use App\Models\ChapterHeading;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Str;
-use Storage;
+use Intervention\Image\ImageManagerStatic as Image;
+use Str;
 
 class ChapterHeadingService implements ServiceInterface
 {
@@ -31,11 +31,18 @@ class ChapterHeadingService implements ServiceInterface
      */
     public function create(array $request): ChapterHeading
     {
-        $base64_image = $request['image'];
-        @list($type, $file_data) = explode(';', $base64_image);
-        @list(, $file_data) = explode(',', $file_data);
-        $imageName = Str::random(10) . '.' . 'png';
-        Storage::disk('local')->put($imageName, base64_decode($file_data));
+        $image = $request['image'];
+        $imageName = Str::random(10) . '.' . $image->getClientOriginalExtension();
+
+        $path = storage_path('uploads');
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $imageResize = Image::make($image->getRealPath());
+        $callback = function ($constraint) { $constraint->upsize(); };
+        $imageResize->widen(1000, $callback)->heighten(1000, $callback);
+        $imageResize->save($path . '/' . $imageName);
 
         $request['image'] = $imageName;
         return ChapterHeading::create($request);
