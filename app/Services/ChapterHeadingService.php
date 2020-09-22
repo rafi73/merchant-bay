@@ -9,7 +9,6 @@ use App\Models\ChapterHeading;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Intervention\Image\ImageManagerStatic as Image;
-use Str;
 
 class ChapterHeadingService implements ServiceInterface
 {
@@ -32,7 +31,7 @@ class ChapterHeadingService implements ServiceInterface
     public function create(array $request): ChapterHeading
     {
         $image = $request['image'];
-        $imageName = Str::random(10) . '.' . $image->getClientOriginalExtension();
+        $imageName = round(microtime(true) * 1000) . '.' . $image->getClientOriginalExtension();
 
         $path = storage_path('uploads');
         if (!file_exists($path)) {
@@ -40,7 +39,7 @@ class ChapterHeadingService implements ServiceInterface
         }
 
         $imageResize = Image::make($image->getRealPath());
-        $callback = function ($constraint) { $constraint->upsize(); };
+        $callback = function ($constraint) {$constraint->upsize();};
         $imageResize->widen(1000, $callback)->heighten(1000, $callback);
         $imageResize->save($path . '/' . $imageName);
 

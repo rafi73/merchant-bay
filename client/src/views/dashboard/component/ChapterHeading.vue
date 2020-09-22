@@ -52,7 +52,7 @@
                                             max-height="40px"
                                             max-width="40px"
                                             aspect-ratio="1"
-                                            :src="require(`${row.item.image}`)"
+                                            :src="imagePath(row.item.image)"
                                         ></v-img>
                                     </td>
                                     <td align="left">{{row.item.title.slice(0, 50)}}</td>
@@ -102,7 +102,7 @@
             </v-col>
         </v-row>
         <!-- Content End-->
-
+        {{chapterHeading}}
         <!-- Add/Update dialog Start-->
         <v-dialog v-model="dialog" persistent max-width="600px">
             <v-card>
@@ -114,7 +114,6 @@
                         <v-form
                             ref="form"
                             v-model="valid"
-                            @keyup.enter.native="validate()"
                             @keyup.esc.native="dialog = false"
                             lazy-validation
                         >
@@ -135,15 +134,12 @@
                                 :rules="[v => !!v || 'Code Category is required']"
                             ></v-select>
 
-                            <!-- <v-image-input v-model="selectedImage" clearable image-format="jpeg" /> -->
-
                             <div v-if="!chapterHeading.image">
                                 <h2>Select an image</h2>
                                 <input type="file" @change="onFileChange" />
                             </div>
                             <div v-else>
                                 <v-img
-                                    :src="chapterHeading.image"
                                     aspect-ratio="1"
                                     class="grey lighten-2"
                                     max-height="300"
@@ -574,7 +570,7 @@ export default {
         editItem(item) {
             this.editMode = true
             this.chapterHeading = item
-            this.selectedImage = require(`@/../../storage/app/${item.image}`)
+            this.chapterHeading.image = this.imagePath(item.image)
             this.dialog = true
         },
         deleteItem(item) {
@@ -753,7 +749,8 @@ export default {
 
             let header = {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Content-Type': 'multipart/form-data',
+                    'Access-Control-Allow-Origin': '*'
                 }
             }
 
@@ -792,7 +789,6 @@ export default {
 
             this.imageData = files[0]
             this.chapterHeading.image = URL.createObjectURL(files[0])
-            console.log(this.chapterHeading)
         },
         createImage(file) {
             var image = new Image()
@@ -806,6 +802,10 @@ export default {
         },
         removeImage: function (e) {
             this.image = ''
+        },
+        imagePath(imageName) {
+            console.log(require(`@/../../storage/uploads/${imageName}`))
+            return require(`@/../../storage/uploads/${imageName}`)
         }
     },
     watch: {
